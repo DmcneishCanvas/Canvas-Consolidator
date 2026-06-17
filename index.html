@@ -256,8 +256,8 @@ function guessType(num, name) {
   var n = String(num || '').trim();
   var nm = (name || '').toLowerCase();
   for (var i = 0; i < IC_KEYWORDS.length; i++) { if (nm.includes(IC_KEYWORDS[i])) return 'Intercompany'; }
-  // Handle Yardi hyphenated format e.g. "11020-000" — use first 1-2 digits
-  var prefix = n.replace(/-.*$/, '');
+  // Handle Yardi hyphenated format e.g. "11020-000" or "1001-0001" — use first digit(s) only
+  var prefix = n.replace(/-.*$/, '').replace(/^(\d).*/, '$1');
   for (var i = 0; i < TYPE_PATTERNS.length; i++) { if (TYPE_PATTERNS[i].pattern.test(prefix)) return TYPE_PATTERNS[i].type; }
   for (var i = 0; i < REVENUE_KEYWORDS.length; i++) { if (nm.includes(REVENUE_KEYWORDS[i])) return 'Revenue'; }
   for (var i = 0; i < EXPENSE_KEYWORDS.length; i++) { if (nm.includes(EXPENSE_KEYWORDS[i])) return 'Expense'; }
@@ -269,6 +269,13 @@ function fmtCurrency(v, parens) {
   var r = Math.round(v);
   if (parens && r < 0) return '(' + Math.abs(r).toLocaleString('en-US') + ')';
   return (r < 0 ? '-' : '') + '$' + Math.abs(r).toLocaleString('en-US');
+}
+
+// TB sign convention: revenue/liability/equity = negative (credit balances)
+// Flip these to positive for display purposes
+function displayAmt(net, type) {
+  if (type === 'Revenue' || type === 'Liability' || type === 'Equity') return -net;
+  return net;
 }
 
 function switchTab(t) {
@@ -303,7 +310,7 @@ function detectYardi(rows) {
   // Look for a row where col0 matches account number pattern like "11020-000" or "4000"
   for (var i = 0; i < Math.min(rows.length, 15); i++) {
     var cell = String(rows[i][0] || '').trim();
-    if (/^\d{4,6}(-\d{3})?$/.test(cell)) return i; // return data start row index
+    if (/^\d{3,6}(-\d{3,4})?$/.test(cell)) return i; // return data start row index
   }
   return -1;
 }
@@ -334,6 +341,7 @@ function parseTrialBalance(filename, rows) {
       var acctNum = String(row[0] || '').trim();
       var acctName = String(row[1] || '').trim();
       if (!acctNum || !/^\d/.test(acctNum)) continue;
+      if (acctName.toLowerCase() === 'total' || acctName.toLowerCase().startsWith('total ')) continue;
       // Use ending balance column (already net)
       var net = parseFloat(String(row[endingCol] || '0').replace(/[,$]/g,'')) || 0;
       accounts.push({ num: acctNum, name: acctName, net: net, type: guessType(acctNum, acctName) });
@@ -524,8 +532,9 @@ function renderStatements() {
   var sum = function(arr) { return arr.reduce(function(s,e){ return s+e[1].total; }, 0); };
   var revenue = byType('Revenue'), expense = byType('Expense');
   var assets = byType('Asset'), liabilities = byType('Liability'), equity = byType('Equity');
-  var totalRev = sum(revenue), totalExp = sum(expense), noi = totalRev - totalExp;
-  var totalAssets = sum(assets), totalLiab = sum(liabilities), totalEq = sum(equity);
+  // Flip signs: revenue/liability/equity are credit balances (negative in TB), display as positive
+  var totalRev = -sum(revenue), totalExp = sum(expense), noi = totalRev - totalExp;
+  var totalAssets = sum(assets), totalLiab = -sum(liabilities), totalEq = -sum(equity);
   var margin = totalRev ? (noi / totalRev * 100) : 0;
 
   var html = '<div class="metric-grid">';
@@ -545,7 +554,7 @@ function renderStatements() {
   if (state.stmtTab === 'pnl') {
     html += '<div class="scrollable"><table class="stmt-table"><thead><tr><th style="width:60%">Line item</th><th>Amount</th></tr></thead><tbody>';
     html += '<tr class="stmt-section-header"><td colspan="2">Revenue</td></tr>';
-    revenue.forEach(function(e){ html += '<tr><td style="padding-left:20px">' + e[0] + '</td><td>' + fmtCurrency(e[1].total) + '</td></tr>'; });
+    revenue.forEach(function(e){ html += '<tr><td style="padding-left:20px">' + e[0] + '</td><td>' + fmtCurrency(-e[1].total) + '</td></tr>'; });
     html += '<tr class="stmt-subtotal"><td>Total revenue</td><td>' + fmtCurrency(totalRev) + '</td></tr>';
     html += '<tr class="stmt-section-header"><td colspan="2">Operating expenses</td></tr>';
     expense.forEach(function(e){ html += '<tr><td style="padding-left:20px">' + e[0] + '</td><td>' + fmtCurrency(e[1].total) + '</td></tr>'; });
@@ -558,10 +567,10 @@ function renderStatements() {
     assets.forEach(function(e){ html += '<tr><td style="padding-left:20px">' + e[0] + '</td><td>' + fmtCurrency(e[1].total) + '</td></tr>'; });
     html += '<tr class="stmt-subtotal"><td>Total assets</td><td>' + fmtCurrency(totalAssets) + '</td></tr>';
     html += '<tr class="stmt-section-header"><td colspan="2">Liabilities</td></tr>';
-    liabilities.forEach(function(e){ html += '<tr><td style="padding-left:20px">' + e[0] + '</td><td>' + fmtCurrency(e[1].total) + '</td></tr>'; });
+    liabilities.forEach(function(e){ html += '<tr><td style="padding-left:20px">' + e[0] + '</td><td>' + fmtCurrency(-e[1].total) + '</td></tr>'; });
     html += '<tr class="stmt-subtotal"><td>Total liabilities</td><td>' + fmtCurrency(totalLiab) + '</td></tr>';
     html += '<tr class="stmt-section-header"><td colspan="2">Equity</td></tr>';
-    equity.forEach(function(e){ html += '<tr><td style="padding-left:20px">' + e[0] + '</td><td>' + fmtCurrency(e[1].total) + '</td></tr>'; });
+    equity.forEach(function(e){ html += '<tr><td style="padding-left:20px">' + e[0] + '</td><td>' + fmtCurrency(-e[1].total) + '</td></tr>'; });
     html += '<tr class="stmt-subtotal"><td>Total equity</td><td>' + fmtCurrency(totalEq) + '</td></tr>';
     html += '<tr class="stmt-total"><td>Total liabilities + equity</td><td>' + fmtCurrency(totalLiab + totalEq) + '</td></tr>';
     html += '</tbody></table></div>';
@@ -573,16 +582,17 @@ function renderStatements() {
     allTypes.forEach(function(type) {
       var typeLines = Object.entries(lines).filter(function(e){ return e[1].type===type; });
       if (!typeLines.length) return;
+      var flip = (type==='Revenue'||type==='Liability'||type==='Equity') ? -1 : 1;
       html += '<tr class="stmt-section-header"><td colspan="' + (3+state.entities.length) + '">' + type + '</td></tr>';
       typeLines.forEach(function(entry) {
         html += '<tr><td style="padding-left:16px">' + entry[0] + '</td><td><span class="tag tag-' + type.toLowerCase() + '">' + type.substring(0,3) + '</span></td>';
-        state.entities.forEach(function(e){ html += '<td>' + fmtCurrency(entry[1].byEntity[e.name]||0) + '</td>'; });
-        html += '<td><strong>' + fmtCurrency(entry[1].total) + '</strong></td></tr>';
+        state.entities.forEach(function(e){ html += '<td>' + fmtCurrency((entry[1].byEntity[e.name]||0)*flip) + '</td>'; });
+        html += '<td><strong>' + fmtCurrency(entry[1].total*flip) + '</strong></td></tr>';
       });
-      var typeTotal = sum(Object.entries(lines).filter(function(e){ return e[1].type===type; }));
+      var typeTotal = sum(Object.entries(lines).filter(function(e){ return e[1].type===type; })) * flip;
       html += '<tr class="stmt-subtotal"><td style="padding-left:16px">Total ' + type.toLowerCase() + '</td><td></td>';
       state.entities.forEach(function(e){
-        var etotal = Object.entries(lines).filter(function(x){ return x[1].type===type; }).reduce(function(s,x){ return s+(x[1].byEntity[e.name]||0); },0);
+        var etotal = Object.entries(lines).filter(function(x){ return x[1].type===type; }).reduce(function(s,x){ return s+(x[1].byEntity[e.name]||0); },0) * flip;
         html += '<td>' + fmtCurrency(etotal) + '</td>';
       });
       html += '<td><strong>' + fmtCurrency(typeTotal) + '</strong></td></tr>';
@@ -602,10 +612,10 @@ function exportExcel() {
   var pnlRows = [['Canvas Residential Partners — Consolidated Income Statement'], [period], prep ? ['Prepared by: ' + prep] : [], [], ['Line item','Amount']];
   var revenue = Object.entries(lines).filter(function(e){ return e[1].type==='Revenue'; });
   var expense = Object.entries(lines).filter(function(e){ return e[1].type==='Expense'; });
-  var totalRev = revenue.reduce(function(s,e){ return s+e[1].total; },0);
+  var totalRev = -revenue.reduce(function(s,e){ return s+e[1].total; },0);
   var totalExp = expense.reduce(function(s,e){ return s+e[1].total; },0);
   pnlRows.push(['REVENUE','']);
-  revenue.forEach(function(e){ pnlRows.push(['  ' + e[0], e[1].total]); });
+  revenue.forEach(function(e){ pnlRows.push(['  ' + e[0], -e[1].total]); });
   pnlRows.push(['Total Revenue', totalRev]);
   pnlRows.push(['EXPENSES','']);
   expense.forEach(function(e){ pnlRows.push(['  ' + e[0], e[1].total]); });
