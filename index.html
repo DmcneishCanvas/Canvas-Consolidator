@@ -468,10 +468,8 @@ function autoGroupAccounts() {
 function renderIC() {
   var el = document.getElementById('icContent');
   var icKeys = Object.keys(state.coaMap).filter(function(k){ return state.coaMap[k].isIC; });
-  if (!icKeys.length) {
-    el.innerHTML = '<div class="alert alert-info"><i class="ti ti-info-circle"></i>No intercompany accounts flagged. Go to COA mapping and check the IC box for any due-to/due-from or management fee accounts.</div>';
-    return;
-  }
+
+  // Build standard IC line map
   var lineMap = {};
   icKeys.forEach(function(k) {
     var m = state.coaMap[k];
@@ -482,29 +480,92 @@ function renderIC() {
       if (match) lineMap[line][e.name] = (lineMap[line][e.name] || 0) + match.net;
     });
   });
+
+  // Build custom elimination pairs map
+  if (!state.customEliminations) state.customEliminations = [];
+
   var html = '';
-  var allBalanced = true;
-  Object.keys(lineMap).forEach(function(line) {
-    var net = Object.values(lineMap[line]).reduce(function(s,v){ return s+v; }, 0);
-    if (Math.abs(net) >= 1) allBalanced = false;
-  });
-  html += allBalanced
-    ? '<div class="alert alert-success"><i class="ti ti-check"></i>All intercompany balances are offset — no mismatches detected.</div>'
-    : '<div class="alert alert-danger"><i class="ti ti-alert-triangle"></i>One or more intercompany balances do not net to zero. Review before generating statements.</div>';
-  html += '<div class="scrollable"><table class="coa-table"><thead><tr><th>IC line item</th>';
-  state.entities.forEach(function(e){ html += '<th style="text-align:right">' + e.name + '</th>'; });
-  html += '<th style="text-align:right">Net</th><th style="width:80px">Status</th></tr></thead><tbody>';
-  Object.keys(lineMap).forEach(function(line) {
-    var net = Object.values(lineMap[line]).reduce(function(s,v){ return s+v; }, 0);
-    var ok = Math.abs(net) < 1;
-    html += '<tr><td><strong>' + line + '</strong></td>';
-    state.entities.forEach(function(e){ html += '<td style="text-align:right">' + fmtCurrency(lineMap[line][e.name]||0) + '</td>'; });
-    html += '<td style="text-align:right" class="' + (ok?'ic-net-ok':'ic-net-bad') + '">' + fmtCurrency(net) + '</td>';
-    html += '<td><span class="tag ' + (ok?'tag-revenue':'tag-liability') + '">' + (ok?'Balanced':'Mismatch') + '</span></td></tr>';
-  });
-  html += '</tbody></table></div>';
+
+  // Standard IC section
+  if (icKeys.length) {
+    var allBalanced = true;
+    Object.keys(lineMap).forEach(function(line) {
+      var net = Object.values(lineMap[line]).reduce(function(s,v){ return s+v; }, 0);
+      if (Math.abs(net) >= 1) allBalanced = false;
+    });
+    html += allBalanced
+      ? '<div class="alert alert-success"><i class="ti ti-check"></i>All flagged IC balances net to zero.</div>'
+      : '<div class="alert alert-danger"><i class="ti ti-alert-triangle"></i>One or more IC balances do not net to zero. Review below.</div>';
+    html += '<div class="scrollable" style="margin-bottom:20px"><table class="coa-table"><thead><tr><th>IC line item</th>';
+    state.entities.forEach(function(e){ html += '<th style="text-align:right">' + e.name.substring(0,12) + '</th>'; });
+    html += '<th style="text-align:right">Net</th><th style="width:80px">Status</th></tr></thead><tbody>';
+    Object.keys(lineMap).forEach(function(line) {
+      var net = Object.values(lineMap[line]).reduce(function(s,v){ return s+v; }, 0);
+      var ok = Math.abs(net) < 1;
+      html += '<tr><td><strong>' + line + '</strong></td>';
+      state.entities.forEach(function(e){ html += '<td style="text-align:right">' + fmtCurrency(lineMap[line][e.name]||0) + '</td>'; });
+      html += '<td style="text-align:right" class="' + (ok?'ic-net-ok':'ic-net-bad') + '">' + fmtCurrency(net) + '</td>';
+      html += '<td><span class="tag ' + (ok?'tag-revenue':'tag-liability') + '">' + (ok?'Balanced':'Mismatch') + '</span></td></tr>';
+    });
+    html += '</tbody></table></div>';
+  } else {
+    html += '<div class="alert alert-info"><i class="ti ti-info-circle"></i>No IC accounts flagged yet. Check the IC box on COA mapping for due-to/from accounts.</div>';
+  }
+
+  // Custom eliminations section
+  html += '<div style="border-top:0.5px solid var(--border);padding-top:16px;margin-top:4px">';
+  html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">';
+  html += '<div><div class="section-label" style="margin:0">Custom elimination pairs</div>';
+  html += '<div style="font-size:12px;color:var(--text2);margin-top:3px">Use to eliminate cross-entity items like Contributed Capital vs Construction in Progress</div></div>';
+  html += '<button class="btn btn-sm" onclick="addCustomElimination()"><i class="ti ti-plus"></i>Add pair</button></div>';
+
+  if (state.customEliminations.length === 0) {
+    html += '<div style="font-size:13px;color:var(--text2);padding:12px 0">No custom eliminations defined. Click "Add pair" to create one.</div>';
+  } else {
+    // Get all consolidated line names for dropdowns
+    var allLines = Object.values(state.coaMap).map(function(m){ return m.consolidatedLine; });
+    allLines = allLines.filter(function(v,i,a){ return a.indexOf(v)===i; }).sort();
+
+    html += '<table class="coa-table"><thead><tr><th>Debit line (reduce)</th><th>Credit line (reduce)</th><th style="text-align:right">Debit entity amt</th><th style="text-align:right">Credit entity amt</th><th style="text-align:right">Difference</th><th></th></tr></thead><tbody>';
+    state.customEliminations.forEach(function(pair, idx) {
+      // Calculate amounts
+      var debitAmt = 0, creditAmt = 0;
+      state.entities.forEach(function(e) {
+        e.accounts.forEach(function(a) {
+          var key = a.num+'|||'+a.name;
+          var m = state.coaMap[key];
+          if (!m) return;
+          if (m.consolidatedLine === pair.debitLine) debitAmt += a.net;
+          if (m.consolidatedLine === pair.creditLine) creditAmt += a.net;
+        });
+      });
+      var diff = debitAmt + creditAmt; // should net to 0
+      var ok = Math.abs(diff) < 1;
+      var opts = allLines.map(function(l){ return '<option value="' + l + '"' + (l===pair.debitLine?' selected':'') + '>' + l + '</option>'; }).join('');
+      var opts2 = allLines.map(function(l){ return '<option value="' + l + '"' + (l===pair.creditLine?' selected':'') + '>' + l + '</option>'; }).join('');
+      html += '<tr>';
+      html += '<td><select onchange="state.customEliminations['+idx+'].debitLine=this.value;renderIC()" style="width:100%;font-size:11px">' + opts + '</select></td>';
+      html += '<td><select onchange="state.customEliminations['+idx+'].creditLine=this.value;renderIC()" style="width:100%;font-size:11px">' + opts2 + '</select></td>';
+      html += '<td style="text-align:right">' + fmtCurrency(debitAmt) + '</td>';
+      html += '<td style="text-align:right">' + fmtCurrency(creditAmt) + '</td>';
+      html += '<td style="text-align:right" class="' + (ok?'ic-net-ok':'ic-net-bad') + '">' + fmtCurrency(diff) + '</td>';
+      html += '<td><button class="btn btn-sm" style="color:var(--danger);border-color:var(--danger)" onclick="state.customEliminations.splice('+idx+',1);renderIC()"><i class="ti ti-x"></i></button></td>';
+      html += '</tr>';
+    });
+    html += '</tbody></table>';
+  }
+  html += '</div>';
+
   el.innerHTML = html;
   document.getElementById('done-ic').style.display = '';
+}
+
+function addCustomElimination() {
+  if (!state.customEliminations) state.customEliminations = [];
+  var allLines = Object.values(state.coaMap).map(function(m){ return m.consolidatedLine; });
+  allLines = allLines.filter(function(v,i,a){ return a.indexOf(v)===i; }).sort();
+  state.customEliminations.push({ debitLine: allLines[0]||'', creditLine: allLines[1]||'' });
+  renderIC();
 }
 
 function buildConsolidated() {
@@ -521,6 +582,18 @@ function buildConsolidated() {
       lines[line].byEntity[entity.name] = (lines[line].byEntity[entity.name] || 0) + acct.net;
     });
   });
+
+  // Apply custom eliminations — zero out both sides
+  if (state.customEliminations) {
+    state.customEliminations.forEach(function(pair) {
+      if (lines[pair.debitLine] && lines[pair.creditLine]) {
+        // The two sides should net to zero — remove both from consolidated
+        delete lines[pair.debitLine];
+        delete lines[pair.creditLine];
+      }
+    });
+  }
+
   return lines;
 }
 
@@ -562,6 +635,11 @@ function renderStatements() {
     html += '<tr class="stmt-total"><td>Net operating income</td><td class="' + (noi>=0?'positive':'negative') + '">' + fmtCurrency(noi) + '</td></tr>';
     html += '</tbody></table></div>';
   } else if (state.stmtTab === 'bs') {
+    var diff = totalAssets - (totalLiab + totalEq);
+    var balanced = Math.abs(diff) < 1;
+    html += balanced
+      ? '<div class="alert alert-success"><i class="ti ti-check"></i>Balance sheet is in balance — assets equal liabilities + equity.</div>'
+      : '<div class="alert alert-danger"><i class="ti ti-alert-triangle"></i>Out of balance by ' + fmtCurrency(Math.abs(diff)) + '. Check intercompany eliminations or account type assignments.</div>';
     html += '<div class="scrollable"><table class="stmt-table"><thead><tr><th style="width:60%">Line item</th><th>Amount</th></tr></thead><tbody>';
     html += '<tr class="stmt-section-header"><td colspan="2">Assets</td></tr>';
     assets.forEach(function(e){ html += '<tr><td style="padding-left:20px">' + e[0] + '</td><td>' + fmtCurrency(e[1].total) + '</td></tr>'; });
@@ -573,6 +651,7 @@ function renderStatements() {
     equity.forEach(function(e){ html += '<tr><td style="padding-left:20px">' + e[0] + '</td><td>' + fmtCurrency(-e[1].total) + '</td></tr>'; });
     html += '<tr class="stmt-subtotal"><td>Total equity</td><td>' + fmtCurrency(totalEq) + '</td></tr>';
     html += '<tr class="stmt-total"><td>Total liabilities + equity</td><td>' + fmtCurrency(totalLiab + totalEq) + '</td></tr>';
+    html += '<tr style="background:' + (balanced ? 'var(--success-bg)' : 'var(--danger-bg)') + '"><td style="font-weight:600;padding:8px 10px">Difference (assets − liabilities − equity)</td><td style="text-align:right;font-weight:600;padding:8px 10px;color:' + (balanced ? 'var(--success)' : 'var(--danger)') + '">' + fmtCurrency(diff) + '</td></tr>';
     html += '</tbody></table></div>';
   } else {
     var allTypes = ['Revenue','Expense','Asset','Liability','Equity'];
