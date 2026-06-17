@@ -155,7 +155,7 @@
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px">
       <div>
         <div class="section-label" style="margin:0">Chart of accounts mapping</div>
-        <div style="font-size:12px;color:var(--text2);margin-top:3px">Edit "Consolidated line" to merge accounts across entities. Check IC for symmetric intercompany accounts (e.g. Due to/from).</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:3px">Edit "Consolidated line" to merge accounts with the same meaning across entities. Set the correct Type for each account.</div>
       </div>
       <div style="display:flex;gap:8px">
         <button class="btn btn-sm" onclick="autoGroupAccounts()"><i class="ti ti-wand"></i>Auto-group</button>
@@ -169,7 +169,7 @@
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px">
       <div>
         <div class="section-label" style="margin:0">Intercompany eliminations</div>
-        <div style="font-size:12px;color:var(--text2);margin-top:3px">IC-flagged accounts net to zero. Custom pairs reduce a debit line by a credit line.</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:3px">Set up elimination pairs: each reduces a debit line by a credit line, then removes the credit line.</div>
       </div>
       <button class="btn btn-sm btn-primary" onclick="switchTab('statements')"><i class="ti ti-report-money"></i>Generate statements</button>
     </div>
@@ -325,11 +325,10 @@ function buildCOAMap() {
     entity.accounts.forEach(function(acct) {
       var key = acct.num + '|||' + acct.name;
       if (!state.coaMap[key]) {
-        // baseType = the real statement category (never mutated by IC flag)
-        // isIC = symmetric intercompany flag, separate from type
-        var isIC = acct.type === 'Intercompany';
-        var baseType = isIC ? 'Liability' : acct.type;
-        state.coaMap[key] = { num: acct.num, name: acct.name, type: baseType, consolidatedLine: acct.name, isIC: isIC };
+        // Intercompany-guessed accounts default to Liability; user can change type and set up
+        // eliminations as pairs on the Intercompany tab.
+        var baseType = acct.type === 'Intercompany' ? 'Liability' : acct.type;
+        state.coaMap[key] = { num: acct.num, name: acct.name, type: baseType, consolidatedLine: acct.name };
       }
     });
   });
@@ -365,18 +364,17 @@ function renderCOA() {
     if (ta !== tb) return ta - tb;
     return (state.coaMap[a].num || '').localeCompare(state.coaMap[b].num || '');
   });
-  var html = '<div class="scrollable"><table class="coa-table"><thead><tr><th style="width:80px">Acct #</th><th style="width:220px">Source name</th><th style="width:110px">Type</th><th>Consolidated line (editable)</th><th style="width:50px;text-align:center">IC?</th></tr></thead><tbody>';
+  var html = '<div class="scrollable"><table class="coa-table"><thead><tr><th style="width:80px">Acct #</th><th style="width:220px">Source name</th><th style="width:110px">Type</th><th>Consolidated line (editable)</th></tr></thead><tbody>';
   keys.forEach(function(k) {
     var m = state.coaMap[k];
     var kSafe = k.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
     html += '<tr><td style="color:var(--text2);font-family:monospace">' + (m.num||'') + '</td><td style="color:var(--text2)">' + m.name + '</td>';
     html += '<td><select onchange="setType(\'' + kSafe + '\',this.value)" style="font-size:11px"><option' + (m.type==='Asset'?' selected':'') + '>Asset</option><option' + (m.type==='Liability'?' selected':'') + '>Liability</option><option' + (m.type==='Equity'?' selected':'') + '>Equity</option><option' + (m.type==='Revenue'?' selected':'') + '>Revenue</option><option' + (m.type==='Expense'?' selected':'') + '>Expense</option></select></td>';
     html += '<td><input type="text" value="' + m.consolidatedLine.replace(/"/g,'&quot;') + '" style="width:100%" onchange="setLine(\'' + kSafe + '\',this.value)"></td>';
-    html += '<td style="text-align:center"><input type="checkbox"' + (m.isIC?' checked':'') + ' onchange="setIC(\'' + kSafe + '\',this.checked)"></td>';
     html += '</tr>';
   });
   html += '</tbody></table></div>';
-  html += '<div style="margin-top:12px;font-size:12px;color:var(--text2)"><i class="ti ti-info-circle" style="vertical-align:-2px"></i> The IC checkbox flags symmetric intercompany balances (e.g. Due to/from) for full elimination. It does NOT change the account type. For asymmetric eliminations (e.g. CIP vs Contributions), use custom pairs on the next tab instead.</div>';
+  html += '<div style="margin-top:12px;font-size:12px;color:var(--text2)"><i class="ti ti-info-circle" style="vertical-align:-2px"></i> Edit "Consolidated line" to merge accounts with identical meaning across entities. All intercompany eliminations are set up on the next tab as elimination pairs.</div>';
   el.innerHTML = html;
   document.getElementById('done-map').style.display = '';
 }
@@ -384,7 +382,6 @@ function renderCOA() {
 // Separate handlers so IC flag NEVER mutates type
 function setType(k, v) { if (state.coaMap[k]) { state.coaMap[k].type = v; renderCOA(); } }
 function setLine(k, v) { if (state.coaMap[k]) state.coaMap[k].consolidatedLine = v; }
-function setIC(k, checked) { if (state.coaMap[k]) state.coaMap[k].isIC = checked; }
 
 function autoGroupAccounts() {
   var groups = {};
@@ -399,53 +396,16 @@ function autoGroupAccounts() {
 
 function renderIC() {
   var el = document.getElementById('icContent');
-  var icKeys = Object.keys(state.coaMap).filter(function(k){ return state.coaMap[k].isIC; });
   if (!state.customEliminations) state.customEliminations = [];
   var html = '';
 
-  if (icKeys.length) {
-    var lineMap = {};
-    icKeys.forEach(function(k) {
-      var m = state.coaMap[k];
-      var line = m.consolidatedLine;
-      if (!lineMap[line]) lineMap[line] = {};
-      state.entities.forEach(function(e) {
-        var match = e.accounts.find(function(a){ return (a.num+'|||'+a.name) === k; });
-        if (match) lineMap[line][e.name] = (lineMap[line][e.name] || 0) + match.net;
-      });
-    });
-    var allBalanced = true;
-    Object.keys(lineMap).forEach(function(line) {
-      var net = Object.values(lineMap[line]).reduce(function(s,v){ return s+v; }, 0);
-      if (Math.abs(net) >= 1) allBalanced = false;
-    });
-    html += allBalanced
-      ? '<div class="alert alert-success"><i class="ti ti-check"></i>All flagged IC balances net to zero.</div>'
-      : '<div class="alert alert-danger"><i class="ti ti-alert-triangle"></i>One or more IC balances do not net to zero. Review below.</div>';
-    html += '<div class="scrollable" style="margin-bottom:20px"><table class="coa-table"><thead><tr><th>IC line item</th>';
-    state.entities.forEach(function(e){ html += '<th style="text-align:right">' + e.name.substring(0,12) + '</th>'; });
-    html += '<th style="text-align:right">Net</th><th style="width:80px">Status</th></tr></thead><tbody>';
-    Object.keys(lineMap).forEach(function(line) {
-      var net = Object.values(lineMap[line]).reduce(function(s,v){ return s+v; }, 0);
-      var ok = Math.abs(net) < 1;
-      html += '<tr><td><strong>' + line + '</strong></td>';
-      state.entities.forEach(function(e){ html += '<td style="text-align:right">' + fmtCurrency(lineMap[line][e.name]||0) + '</td>'; });
-      html += '<td style="text-align:right" class="' + (ok?'ic-net-ok':'ic-net-bad') + '">' + fmtCurrency(net) + '</td>';
-      html += '<td><span class="tag ' + (ok?'tag-revenue':'tag-liability') + '">' + (ok?'Balanced':'Mismatch') + '</span></td></tr>';
-    });
-    html += '</tbody></table></div>';
-  } else {
-    html += '<div class="alert alert-info"><i class="ti ti-info-circle"></i>No IC accounts flagged. Use custom pairs below for asymmetric eliminations.</div>';
-  }
-
-  html += '<div style="border-top:0.5px solid var(--border);padding-top:16px;margin-top:4px">';
   html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">';
-  html += '<div><div class="section-label" style="margin:0">Custom elimination pairs</div>';
-  html += '<div style="font-size:12px;color:var(--text2);margin-top:3px">Debit line (asset/investment) is reduced by the Credit line (equity/contribution), which is then removed.</div></div>';
+  html += '<div><div class="section-label" style="margin:0">Elimination pairs</div>';
+  html += '<div style="font-size:12px;color:var(--text2);margin-top:3px">Each pair reduces the Debit line by the Credit line, then removes the Credit line. For a symmetric due-to/due-from, the two sides net to zero and both clear.</div></div>';
   html += '<button class="btn btn-sm" onclick="addCustomElimination()"><i class="ti ti-plus"></i>Add pair</button></div>';
 
   if (state.customEliminations.length === 0) {
-    html += '<div style="font-size:13px;color:var(--text2);padding:12px 0">No custom eliminations defined. Click "Add pair" to create one.</div>';
+    html += '<div class="alert alert-info"><i class="ti ti-info-circle"></i>No eliminations defined. Click "Add pair" to create one. Put the asset/investment account on the Debit side and the equity/contribution (or offsetting) account on the Credit side.</div>';
   } else {
     var allLines = Object.values(state.coaMap).map(function(m){ return m.consolidatedLine; });
     allLines = allLines.filter(function(v,i,a){ return a.indexOf(v)===i; }).sort();
@@ -474,7 +434,6 @@ function renderIC() {
     });
     html += '</tbody></table>';
   }
-  html += '</div>';
   el.innerHTML = html;
   document.getElementById('done-ic').style.display = '';
 }
@@ -487,15 +446,14 @@ function addCustomElimination() {
   renderIC();
 }
 
-// Build consolidated lines. IC-flagged accounts are excluded (they net to zero).
-// Custom eliminations reduce the debit line by the credit line, then remove the credit line.
+// Build consolidated lines, then apply elimination pairs.
+// Each pair reduces the debit line by the credit line, then removes the credit line.
 function buildConsolidated() {
   var lines = {};
   state.entities.forEach(function(entity) {
     entity.accounts.forEach(function(acct) {
       var mapping = state.coaMap[acct.num + '|||' + acct.name];
       if (!mapping) return;
-      if (mapping.isIC) return; // symmetric IC fully eliminated
       var line = mapping.consolidatedLine;
       if (!lines[line]) lines[line] = { type: mapping.type, total: 0, byEntity: {} };
       lines[line].total += acct.net;
@@ -704,7 +662,7 @@ function exportExcel() {
         var m=state.coaMap[acct.num+'|||'+acct.name];
         if(!m)return;
         var line=m.consolidatedLine;
-        var type=m.isIC?'Intercompany':m.type;
+        var type=m.type;
         if(!rawLines[line])rawLines[line]={type:type,byEntity:{}};
         rawLines[line].byEntity[entity.name]=(rawLines[line].byEntity[entity.name]||0)+acct.net;
       });
