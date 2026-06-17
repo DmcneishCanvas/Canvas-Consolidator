@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Financial Statement Consolidator · Canvas Residential Partners</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg2: #f7f7f5;
+    --bg3: #f0efe9;
+    --text: #1a1a1a;
+    --text2: #6b6b6b;
+    --text3: #9a9a9a;
+    --border: rgba(0,0,0,0.12);
+    --border2: rgba(0,0,0,0.22);
+    --success: #0f6e56;
+    --danger: #993c1d;
+    --warning: #854f0b;
+    --info: #185fa5;
+    --success-bg: #e1f5ee;
+    --warning-bg: #faeeda;
+    --danger-bg: #faece7;
+    --info-bg: #e6f1fb;
+    --radius: 8px;
+    --radius-lg: 12px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1e1e1c;
+      --bg2: #272724;
+      --bg3: #2f2f2c;
+      --text: #f0efe9;
+      --text2: #a0a09a;
+      --text3: #6b6b66;
+      --border: rgba(255,255,255,0.12);
+      --border2: rgba(255,255,255,0.22);
+      --success: #5dcaa5;
+      --danger: #f0997b;
+      --warning: #ef9f27;
+      --info: #85b7eb;
+      --success-bg: #04342c;
+      --warning-bg: #412402;
+      --danger-bg: #4a1b0c;
+      --info-bg: #042c53;
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 14px; background: var(--bg3); color: var(--text); min-height: 100vh; }
+  .shell { max-width: 1100px; margin: 0 auto; background: var(--bg); min-height: 100vh; box-shadow: 0 0 0 0.5px var(--border); }
+  .topbar { display: flex; align-items: center; gap: 12px; padding: 14px 20px; border-bottom: 0.5px solid var(--border); background: var(--bg); }
+  .logo { width: 32px; height: 32px; background: var(--text); border-radius: 6px; display: flex; align-items: center; justify-content: center; }
+  .logo i { font-size: 18px; color: var(--bg); }
+  .topbar-title { font-size: 15px; font-weight: 600; }
+  .topbar-sub { font-size: 12px; color: var(--text2); margin-top: 1px; }
+  .topbar-actions { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+  .banner { background: var(--info-bg); border-bottom: 0.5px solid var(--border); padding: 9px 20px; display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--info); }
+  .banner a { color: var(--info); font-weight: 500; }
+  .steps { display: flex; border-bottom: 0.5px solid var(--border); background: var(--bg); overflow-x: auto; }
+  .step-tab { padding: 11px 18px; font-size: 13px; color: var(--text2); cursor: pointer; border-bottom: 2px solid transparent; display: flex; align-items: center; gap: 7px; white-space: nowrap; transition: color 0.15s; user-select: none; }
+  .step-tab:hover { color: var(--text); }
+  .step-tab.active { color: var(--text); border-bottom-color: var(--text); font-weight: 500; }
+  .step-tab.done i.status { color: var(--success); }
+  .content { padding: 24px 20px; }
+  .section-label { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 14px; }
+  .upload-zone { border: 1.5px dashed var(--border2); border-radius: var(--radius-lg); padding: 40px 20px; text-align: center; cursor: pointer; transition: background 0.15s; }
+  .upload-zone:hover, .upload-zone.drag { background: var(--bg2); }
+  .upload-zone i.main { font-size: 32px; color: var(--text3); display: block; margin-bottom: 10px; }
+  .upload-zone p { font-size: 13px; color: var(--text2); line-height: 1.6; }
+  .upload-zone strong { color: var(--text); }
+  .entity-list { display: flex; flex-direction: column; gap: 8px; margin-top: 18px; }
+  .entity-card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 11px 14px; display: flex; align-items: center; gap: 12px; }
+  .entity-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .entity-name { font-size: 13px; font-weight: 500; flex: 1; }
+  .entity-meta { font-size: 12px; color: var(--text2); }
+  .entity-remove { color: var(--text3); cursor: pointer; font-size: 16px; padding: 4px; border: none; background: none; display: flex; align-items: center; }
+  .entity-remove:hover { color: var(--danger); }
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; font-size: 13px; border: 0.5px solid var(--border2); border-radius: var(--radius); cursor: pointer; background: transparent; color: var(--text); transition: background 0.15s; white-space: nowrap; }
+  .btn:hover { background: var(--bg2); }
+  .btn-primary { background: var(--text); color: var(--bg); border-color: transparent; }
+  .btn-primary:hover { opacity: 0.85; background: var(--text); }
+  .btn-sm { padding: 5px 11px; font-size: 12px; }
+  .btn-danger { border-color: var(--danger); color: var(--danger); }
+  .coa-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .coa-table th { text-align: left; padding: 7px 8px; font-size: 11px; font-weight: 600; color: var(--text3); border-bottom: 0.5px solid var(--border); text-transform: uppercase; letter-spacing: 0.05em; }
+  .coa-table td { padding: 6px 8px; border-bottom: 0.5px solid var(--border); vertical-align: middle; }
+  .coa-table tr:hover td { background: var(--bg2); }
+  .tag { display: inline-block; font-size: 11px; padding: 2px 7px; border-radius: 4px; font-weight: 500; }
+  .tag-asset { background: #e6f1fb; color: #0c447c; }
+  .tag-liability { background: #faece7; color: #712b13; }
+  .tag-equity { background: #eaf3de; color: #27500a; }
+  .tag-revenue { background: #e1f5ee; color: #085041; }
+  .tag-expense { background: #faeeda; color: #633806; }
+  .tag-intercompany { background: #fbeaf0; color: #72243e; }
+  .stmt-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .stmt-table th { text-align: right; padding: 6px 10px; font-size: 11px; font-weight: 600; color: var(--text3); border-bottom: 0.5px solid var(--border); text-transform: uppercase; letter-spacing: 0.04em; }
+  .stmt-table th:first-child { text-align: left; }
+  .stmt-table td { padding: 6px 10px; border-bottom: 0.5px solid var(--border); text-align: right; font-variant-numeric: tabular-nums; }
+  .stmt-table td:first-child { text-align: left; }
+  .stmt-section-header td { font-weight: 600; font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.05em; padding-top: 16px; background: none !important; border-bottom: none; }
+  .stmt-total td { font-weight: 600; border-top: 1.5px solid var(--border2); border-bottom: 2px solid var(--text); }
+  .stmt-subtotal td { font-weight: 500; border-top: 0.5px solid var(--border2); background: var(--bg2); }
+  .positive { color: var(--success); }
+  .negative { color: var(--danger); }
+  .metric-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 22px; }
+  .metric-card { background: var(--bg2); border-radius: var(--radius); padding: 14px; }
+  .metric-label { font-size: 11px; color: var(--text2); margin-bottom: 5px; font-weight: 500; }
+  .metric-value { font-size: 22px; font-weight: 600; letter-spacing: -0.5px; }
+  .tabs { display: flex; gap: 0; border-bottom: 0.5px solid var(--border); margin-bottom: 18px; }
+  .tab { padding: 9px 16px; font-size: 13px; color: var(--text2); cursor: pointer; border-bottom: 2px solid transparent; user-select: none; }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--text); border-bottom-color: var(--text); font-weight: 500; }
+  .empty-state { text-align: center; padding: 48px 20px; color: var(--text2); }
+  .empty-state i { font-size: 36px; display: block; margin-bottom: 14px; color: var(--text3); }
+  .empty-state p { font-size: 13px; line-height: 1.6; }
+  .alert { padding: 10px 14px; border-radius: var(--radius); font-size: 13px; margin-bottom: 14px; display: flex; align-items: center; gap: 9px; }
+  .alert-warning { background: var(--warning-bg); color: var(--warning); }
+  .alert-success { background: var(--success-bg); color: var(--success); }
+  .alert-info { background: var(--info-bg); color: var(--info); }
+  .alert-danger { background: var(--danger-bg); color: var(--danger); }
+  .scrollable { max-height: 460px; overflow-y: auto; }
+  .actions-row { display: flex; gap: 10px; margin-top: 20px; align-items: center; flex-wrap: wrap; }
+  input[type=file] { display: none; }
+  input[type=text], select { font-size: 12px; padding: 4px 7px; border: 0.5px solid var(--border2); border-radius: 4px; background: var(--bg); color: var(--text); font-family: inherit; }
+  input[type=text]:focus, select:focus { outline: 2px solid var(--info); outline-offset: 1px; }
+  input[type=checkbox] { cursor: pointer; }
+  .period-bar { display: flex; gap: 10px; align-items: center; margin-bottom: 18px; padding: 12px 14px; background: var(--bg2); border-radius: var(--radius); font-size: 12px; flex-wrap: wrap; }
+  .period-bar label { color: var(--text2); font-weight: 500; }
+  .ic-net-ok { color: var(--success); font-weight: 600; }
+  .ic-net-bad { color: var(--danger); font-weight: 600; }
+  .footer { border-top: 0.5px solid var(--border); padding: 12px 20px; font-size: 11px; color: var(--text3); display: flex; justify-content: space-between; align-items: center; }
+  @media (max-width: 600px) { .metric-grid { grid-template-columns: 1fr 1fr; } .topbar-sub { display: none; } }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <div class="topbar">
+    <div class="logo"><i class="ti ti-building-bank"></i></div>
+    <div>
+      <div class="topbar-title">Financial Statement Consolidator</div>
+      <div class="topbar-sub">Canvas Residential Partners · Collett Capital Management</div>
+    </div>
+    <div class="topbar-actions">
+      <button class="btn btn-sm" onclick="loadDemo()"><i class="ti ti-database"></i>Demo data</button>
+      <button class="btn btn-sm" onclick="clearAll()"><i class="ti ti-trash"></i>Clear</button>
+      <button class="btn btn-sm btn-primary" onclick="exportExcel()"><i class="ti ti-download"></i>Export Excel</button>
+    </div>
+  </div>
+
+  <div class="banner">
+    <i class="ti ti-info-circle"></i>
+    <span>Source trial balance files are stored in your SharePoint document library. Upload them here each session, then export the consolidated output back to SharePoint.</span>
+  </div>
+
+  <div class="steps">
+    <div class="step-tab active" id="tab-upload" onclick="switchTab('upload')">
+      <i class="ti ti-upload"></i>1. Upload TBs<i class="ti ti-check status" id="done-upload" style="display:none;color:var(--success)"></i>
+    </div>
+    <div class="step-tab" id="tab-map" onclick="switchTab('map')">
+      <i class="ti ti-list-tree"></i>2. COA mapping<i class="ti ti-check status" id="done-map" style="display:none;color:var(--success)"></i>
+    </div>
+    <div class="step-tab" id="tab-ic" onclick="switchTab('ic')">
+      <i class="ti ti-arrows-exchange"></i>3. Intercompany<i class="ti ti-check status" id="done-ic" style="display:none;color:var(--success)"></i>
+    </div>
+    <div class="step-tab" id="tab-statements" onclick="switchTab('statements')">
+      <i class="ti ti-report-money"></i>4. Statements
+    </div>
+  </div>
+
+  <!-- STEP 1: UPLOAD -->
+  <div class="content" id="view-upload">
+    <div class="section-label">Entity trial balances</div>
+    <div class="upload-zone" id="dropZone" onclick="document.getElementById('fileInput').click()"
+      ondragover="event.preventDefault();this.classList.add('drag')"
+      ondragleave="this.classList.remove('drag')"
+      ondrop="event.preventDefault();this.classList.remove('drag');handleFiles(event.dataTransfer.files)">
+      <i class="ti ti-file-spreadsheet main"></i>
+      <p><strong>Click to upload</strong> or drag &amp; drop Excel / CSV trial balance files</p>
+      <p>One file per entity &nbsp;·&nbsp; Expected columns: Account #, Account Name, Debit, Credit (or Net Balance)</p>
+      <p style="margin-top:8px;font-size:11px;color:var(--text3)">Supported: .xlsx · .xls · .csv</p>
+    </div>
+    <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" multiple onchange="handleFiles(this.files)">
+    <div class="entity-list" id="entityList"></div>
+    <div class="actions-row" id="uploadActions" style="display:none">
+      <button class="btn btn-primary" onclick="switchTab('map')"><i class="ti ti-arrow-right"></i>Continue to COA mapping</button>
+      <span style="font-size:12px;color:var(--text2)" id="uploadSummary"></span>
+    </div>
+  </div>
+
+  <!-- STEP 2: COA MAPPING -->
+  <div class="content" id="view-map" style="display:none">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+      <div>
+        <div class="section-label" style="margin:0">Chart of accounts mapping</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:3px">Edit "Consolidated line" to merge accounts across entities. Check IC for intercompany accounts.</div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-sm" onclick="autoGroupAccounts()"><i class="ti ti-wand"></i>Auto-group</button>
+        <button class="btn btn-sm btn-primary" onclick="switchTab('ic')"><i class="ti ti-arrow-right"></i>Next</button>
+      </div>
+    </div>
+    <div id="coaContent"><div class="empty-state"><i class="ti ti-list-tree"></i><p>Upload trial balances first</p></div></div>
+  </div>
+
+  <!-- STEP 3: INTERCOMPANY -->
+  <div class="content" id="view-ic" style="display:none">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+      <div>
+        <div class="section-label" style="margin:0">Intercompany eliminations</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:3px">Accounts marked IC are eliminated from consolidated totals. Net should equal $0 for balanced entries.</div>
+      </div>
+      <button class="btn btn-sm btn-primary" onclick="switchTab('statements')"><i class="ti ti-report-money"></i>Generate statements</button>
+    </div>
+    <div id="icContent"><div class="empty-state"><i class="ti ti-arrows-exchange"></i><p>No intercompany accounts detected yet</p></div></div>
+  </div>
+
+  <!-- STEP 4: STATEMENTS -->
+  <div class="content" id="view-statements" style="display:none">
+    <div class="period-bar">
+      <label>Period:</label>
+      <input type="text" id="periodLabel" value="Month ended" style="width:120px">
+      <input type="text" id="periodDate" value="" placeholder="e.g. March 31, 2026" style="width:160px">
+      <label style="margin-left:12px">Prepared by:</label>
+      <input type="text" id="preparedBy" value="" placeholder="Initials" style="width:80px">
+    </div>
+    <div id="stmtContent"><div class="empty-state"><i class="ti ti-report-money"></i><p>Complete previous steps to generate consolidated statements</p></div></div>
+  </div>
+
+  <div class="footer">
+    <span>Canvas Residential Partners · For internal use only</span>
+    <span id="footerStatus">No data loaded</span>
+  </div>
+
+</div>
+
+<script>
+var state = { entities: [], coaMap: {}, stmtTab: 'pnl' };
+var ENTITY_COLORS = ['#185fa5','#0f6e56','#854f0b','#993556','#533ab7','#3b6d11','#993c1d'];
+
+var TYPE_PATTERNS = [
+  { pattern: /^1/, type: 'Asset' },
+  { pattern: /^2/, type: 'Liability' },
+  { pattern: /^3/, type: 'Equity' },
+  { pattern: /^4/, type: 'Revenue' },
+  { pattern: /^[5-9]/, type: 'Expense' },
+];
+
+var IC_KEYWORDS = ['due to','due from','intercompany','inter-co','inter co','management fee payable','mgmt fee payable','related party'];
+var EXPENSE_KEYWORDS = ['expense','cost','depreciation','amortization','interest','tax','insurance','utilities','repair','maintenance','payroll','salary','wage','benefit','management fee','admin','legal','accounting','marketing'];
+var REVENUE_KEYWORDS = ['income','revenue','rent','parking','laundry','fee','rebate','interest income','other income'];
+
+function guessType(num, name) {
+  var n = String(num || '').trim();
+  var nm = (name || '').toLowerCase();
+  for (var i = 0; i < IC_KEYWORDS.length; i++) { if (nm.includes(IC_KEYWORDS[i])) return 'Intercompany'; }
+  // Handle Yardi hyphenated format e.g. "11020-000" — use first 1-2 digits
+  var prefix = n.replace(/-.*$/, '');
+  for (var i = 0; i < TYPE_PATTERNS.length; i++) { if (TYPE_PATTERNS[i].pattern.test(prefix)) return TYPE_PATTERNS[i].type; }
+  for (var i = 0; i < REVENUE_KEYWORDS.length; i++) { if (nm.includes(REVENUE_KEYWORDS[i])) return 'Revenue'; }
+  for (var i = 0; i < EXPENSE_KEYWORDS.length; i++) { if (nm.includes(EXPENSE_KEYWORDS[i])) return 'Expense'; }
+  return 'Expense';
+}
+
+function fmtCurrency(v, parens) {
+  if (v === null || v === undefined || isNaN(v)) return '-';
+  var r = Math.round(v);
+  if (parens && r < 0) return '(' + Math.abs(r).toLocaleString('en-US') + ')';
+  return (r < 0 ? '-' : '') + '$' + Math.abs(r).toLocaleString('en-US');
+}
+
+function switchTab(t) {
+  ['upload','map','ic','statements'].forEach(function(x) {
+    document.getElementById('view-' + x).style.display = 'none';
+    document.getElementById('tab-' + x).classList.remove('active');
+  });
+  document.getElementById('view-' + t).style.display = '';
+  document.getElementById('tab-' + t).classList.add('active');
+  if (t === 'map') renderCOA();
+  if (t === 'ic') renderIC();
+  if (t === 'statements') renderStatements();
+}
+
+function handleFiles(files) {
+  Array.from(files).forEach(function(file) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        var wb = XLSX.read(e.target.result, { type: 'array' });
+        var ws = wb.Sheets[wb.SheetNames[0]];
+        var rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+        parseTrialBalance(file.name, rows);
+      } catch(err) { alert('Could not parse: ' + file.name + '\n' + err.message); }
+    };
+    reader.readAsArrayBuffer(file);
+  });
+}
+
+function detectYardi(rows) {
+  // Yardi TBs have metadata rows at top, split header across 2 rows, data starts after
+  // Look for a row where col0 matches account number pattern like "11020-000" or "4000"
+  for (var i = 0; i < Math.min(rows.length, 15); i++) {
+    var cell = String(rows[i][0] || '').trim();
+    if (/^\d{4,6}(-\d{3})?$/.test(cell)) return i; // return data start row index
+  }
+  return -1;
+}
+
+function parseTrialBalance(filename, rows) {
+  if (!rows || rows.length < 2) return;
+
+  // Try Yardi detection first
+  var yardiDataStart = detectYardi(rows);
+  var accounts = [];
+
+  if (yardiDataStart >= 2) {
+    // Yardi format: scan header rows above data for column positions
+    // Default Yardi layout: col0=acct#, col1=name, col2=bal fwd, col3=debit, col4=credit, col5=ending balance
+    // Find which column is "ending" by scanning header rows
+    var endingCol = 5; // default
+    var debitCol = 3, creditCol = 4;
+    for (var hi = 0; hi < yardiDataStart; hi++) {
+      var hrow = rows[hi].map(function(c){ return String(c||'').toLowerCase().trim(); });
+      for (var ci = 0; ci < hrow.length; ci++) {
+        if (hrow[ci].includes('ending') || hrow[ci].includes('balance') && ci > 3) endingCol = ci;
+        if (hrow[ci] === 'debit' || hrow[ci] === 'dr') debitCol = ci;
+        if (hrow[ci] === 'credit' || hrow[ci] === 'cr') creditCol = ci;
+      }
+    }
+    for (var i = yardiDataStart; i < rows.length; i++) {
+      var row = rows[i];
+      var acctNum = String(row[0] || '').trim();
+      var acctName = String(row[1] || '').trim();
+      if (!acctNum || !/^\d/.test(acctNum)) continue;
+      // Use ending balance column (already net)
+      var net = parseFloat(String(row[endingCol] || '0').replace(/[,$]/g,'')) || 0;
+      accounts.push({ num: acctNum, name: acctName, net: net, type: guessType(acctNum, acctName) });
+    }
+  } else {
+    // Generic format: use header row detection
+    var header = rows[0].map(function(h){ return String(h).toLowerCase().trim(); });
+    var find = function(keywords) {
+      for (var i = 0; i < header.length; i++) {
+        for (var j = 0; j < keywords.length; j++) { if (header[i].includes(keywords[j])) return i; }
+      }
+      return -1;
+    };
+    var acctIdx = find(['acct','account num','account #','account code','acct no']);
+    if (acctIdx < 0) acctIdx = find(['account']);
+    if (acctIdx < 0) acctIdx = 0;
+    var nameIdx = find(['description','name','account name','acct name','acct desc']);
+    if (nameIdx < 0) nameIdx = acctIdx === 0 ? 1 : 0;
+    var drIdx = find(['debit','dr amount','debit amount']);
+    var crIdx = find(['credit','cr amount','credit amount']);
+    var netIdx = find(['ending','balance','net','amount']);
+
+    for (var i = 1; i < rows.length; i++) {
+      var row = rows[i];
+      var acctNum = String(row[acctIdx] || '').trim();
+      var acctName = String(row[nameIdx] || '').trim();
+      if (!acctNum && !acctName) continue;
+      var net = 0;
+      if (netIdx >= 0) {
+        net = parseFloat(String(row[netIdx]).replace(/[,$]/g,'')) || 0;
+      } else if (drIdx >= 0 && crIdx >= 0) {
+        net = (parseFloat(String(row[drIdx]).replace(/[,$]/g,'')) || 0) - (parseFloat(String(row[crIdx]).replace(/[,$]/g,'')) || 0);
+      }
+      accounts.push({ num: acctNum, name: acctName, net: net, type: guessType(acctNum, acctName) });
+    }
+  }
+
+  // For Yardi files, use the property name from row 1 instead of filename
+  var entityName = filename.replace(/\.(xlsx|xls|csv)$/i, '').replace(/[-_]/g, ' ').trim();
+  if (yardiDataStart >= 2 && rows[0] && rows[0][0]) {
+    var yardiName = String(rows[0][0]).trim();
+    if (yardiName && yardiName.length > 2) entityName = yardiName;
+  }
+  var existing = state.entities.findIndex(function(e){ return e.name === entityName; });
+  var colorIdx = existing >= 0 ? existing : state.entities.length;
+  var entity = { name: entityName, accounts: accounts, color: ENTITY_COLORS[colorIdx % ENTITY_COLORS.length] };
+  if (existing >= 0) state.entities[existing] = entity;
+  else state.entities.push(entity);
+  buildCOAMap();
+  renderEntityList();
+  updateFooter();
+  document.getElementById('done-upload').style.display = '';
+}
+
+function buildCOAMap() {
+  state.entities.forEach(function(entity) {
+    entity.accounts.forEach(function(acct) {
+      var key = acct.num + '|||' + acct.name;
+      if (!state.coaMap[key]) {
+        state.coaMap[key] = { num: acct.num, name: acct.name, type: acct.type, consolidatedLine: acct.name, isIC: acct.type === 'Intercompany' };
+      }
+    });
+  });
+}
+
+function renderEntityList() {
+  var el = document.getElementById('entityList');
+  if (!state.entities.length) { el.innerHTML = ''; return; }
+  el.innerHTML = state.entities.map(function(e, i) {
+    var total = e.accounts.reduce(function(s,a){ return s + Math.abs(a.net); }, 0);
+    return '<div class="entity-card"><div class="entity-dot" style="background:' + e.color + '"></div><div class="entity-name">' + e.name + '</div><div class="entity-meta">' + e.accounts.length + ' accounts &nbsp;·&nbsp; $' + (Math.round(total/1000)).toLocaleString() + 'K total volume</div><button class="entity-remove" onclick="removeEntity(' + i + ')" title="Remove"><i class="ti ti-x"></i></button></div>';
+  }).join('');
+  document.getElementById('uploadActions').style.display = '';
+  document.getElementById('uploadSummary').textContent = state.entities.length + ' entit' + (state.entities.length === 1 ? 'y' : 'ies') + ' loaded';
+}
+
+function removeEntity(i) {
+  state.entities.splice(i, 1);
+  state.coaMap = {};
+  state.entities.forEach(function(e){ e.accounts.forEach(function(a){ var key = a.num+'|||'+a.name; if(!state.coaMap[key]) state.coaMap[key]={num:a.num,name:a.name,type:a.type,consolidatedLine:a.name,isIC:a.type==='Intercompany'}; }); });
+  renderEntityList();
+  if (!state.entities.length) document.getElementById('done-upload').style.display = 'none';
+  updateFooter();
+}
+
+function renderCOA() {
+  var el = document.getElementById('coaContent');
+  var keys = Object.keys(state.coaMap);
+  if (!keys.length) { el.innerHTML = '<div class="empty-state"><i class="ti ti-list-tree"></i><p>Upload trial balances first</p></div>'; return; }
+  var typeOrder = ['Asset','Liability','Equity','Revenue','Expense','Intercompany'];
+  keys.sort(function(a,b){
+    var ta = typeOrder.indexOf(state.coaMap[a].type), tb = typeOrder.indexOf(state.coaMap[b].type);
+    if (ta !== tb) return ta - tb;
+    return (state.coaMap[a].num || '').localeCompare(state.coaMap[b].num || '');
+  });
+  var html = '<div class="scrollable"><table class="coa-table"><thead><tr><th style="width:80px">Acct #</th><th style="width:220px">Source name</th><th style="width:110px">Type</th><th>Consolidated line (editable)</th><th style="width:50px;text-align:center">IC?</th></tr></thead><tbody>';
+  keys.forEach(function(k) {
+    var m = state.coaMap[k];
+    var kSafe = k.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+    var tagClass = 'tag-' + m.type.toLowerCase();
+    html += '<tr><td style="color:var(--text2);font-family:monospace">' + (m.num||'') + '</td><td style="color:var(--text2)">' + m.name + '</td>';
+    html += '<td><select onchange="state.coaMap[\'' + kSafe + '\'].type=this.value;renderCOA()" style="font-size:11px"><option' + (m.type==='Asset'?' selected':'') + '>Asset</option><option' + (m.type==='Liability'?' selected':'') + '>Liability</option><option' + (m.type==='Equity'?' selected':'') + '>Equity</option><option' + (m.type==='Revenue'?' selected':'') + '>Revenue</option><option' + (m.type==='Expense'?' selected':'') + '>Expense</option><option' + (m.type==='Intercompany'?' selected':'') + '>Intercompany</option></select></td>';
+    html += '<td><input type="text" value="' + m.consolidatedLine.replace(/"/g,'&quot;') + '" style="width:100%" onchange="state.coaMap[\'' + kSafe + '\'].consolidatedLine=this.value"></td>';
+    html += '<td style="text-align:center"><input type="checkbox"' + (m.isIC?' checked':'') + ' onchange="state.coaMap[\'' + kSafe + '\'].isIC=this.checked;state.coaMap[\'' + kSafe + '\'].type=this.checked?\'Intercompany\':state.coaMap[\'' + kSafe + '\'].type"></td>';
+    html += '</tr>';
+  });
+  html += '</tbody></table></div>';
+  html += '<div style="margin-top:12px;font-size:12px;color:var(--text2)"><i class="ti ti-info-circle" style="vertical-align:-2px"></i> Edit "Consolidated line" to merge accounts with identical names across entities. Check IC to flag intercompany balances for elimination.</div>';
+  el.innerHTML = html;
+  document.getElementById('done-map').style.display = '';
+}
+
+function autoGroupAccounts() {
+  var groups = {};
+  Object.keys(state.coaMap).forEach(function(k) {
+    var m = state.coaMap[k];
+    var normalized = m.name.toLowerCase().trim().replace(/\s+/g,' ');
+    if (!groups[normalized]) groups[normalized] = m.name;
+    state.coaMap[k].consolidatedLine = groups[normalized];
+  });
+  renderCOA();
+}
+
+function renderIC() {
+  var el = document.getElementById('icContent');
+  var icKeys = Object.keys(state.coaMap).filter(function(k){ return state.coaMap[k].isIC; });
+  if (!icKeys.length) {
+    el.innerHTML = '<div class="alert alert-info"><i class="ti ti-info-circle"></i>No intercompany accounts flagged. Go to COA mapping and check the IC box for any due-to/due-from or management fee accounts.</div>';
+    return;
+  }
+  var lineMap = {};
+  icKeys.forEach(function(k) {
+    var m = state.coaMap[k];
+    var line = m.consolidatedLine;
+    if (!lineMap[line]) lineMap[line] = {};
+    state.entities.forEach(function(e) {
+      var match = e.accounts.find(function(a){ return (a.num+'|||'+a.name) === k; });
+      if (match) lineMap[line][e.name] = (lineMap[line][e.name] || 0) + match.net;
+    });
+  });
+  var html = '';
+  var allBalanced = true;
+  Object.keys(lineMap).forEach(function(line) {
+    var net = Object.values(lineMap[line]).reduce(function(s,v){ return s+v; }, 0);
+    if (Math.abs(net) >= 1) allBalanced = false;
+  });
+  html += allBalanced
+    ? '<div class="alert alert-success"><i class="ti ti-check"></i>All intercompany balances are offset — no mismatches detected.</div>'
+    : '<div class="alert alert-danger"><i class="ti ti-alert-triangle"></i>One or more intercompany balances do not net to zero. Review before generating statements.</div>';
+  html += '<div class="scrollable"><table class="coa-table"><thead><tr><th>IC line item</th>';
+  state.entities.forEach(function(e){ html += '<th style="text-align:right">' + e.name + '</th>'; });
+  html += '<th style="text-align:right">Net</th><th style="width:80px">Status</th></tr></thead><tbody>';
+  Object.keys(lineMap).forEach(function(line) {
+    var net = Object.values(lineMap[line]).reduce(function(s,v){ return s+v; }, 0);
+    var ok = Math.abs(net) < 1;
+    html += '<tr><td><strong>' + line + '</strong></td>';
+    state.entities.forEach(function(e){ html += '<td style="text-align:right">' + fmtCurrency(lineMap[line][e.name]||0) + '</td>'; });
+    html += '<td style="text-align:right" class="' + (ok?'ic-net-ok':'ic-net-bad') + '">' + fmtCurrency(net) + '</td>';
+    html += '<td><span class="tag ' + (ok?'tag-revenue':'tag-liability') + '">' + (ok?'Balanced':'Mismatch') + '</span></td></tr>';
+  });
+  html += '</tbody></table></div>';
+  el.innerHTML = html;
+  document.getElementById('done-ic').style.display = '';
+}
+
+function buildConsolidated() {
+  var lines = {};
+  state.entities.forEach(function(entity) {
+    entity.accounts.forEach(function(acct) {
+      var key = acct.num + '|||' + acct.name;
+      var mapping = state.coaMap[key];
+      if (!mapping || mapping.isIC) return;
+      var line = mapping.consolidatedLine;
+      var type = mapping.type;
+      if (!lines[line]) lines[line] = { type: type, total: 0, byEntity: {} };
+      lines[line].total += acct.net;
+      lines[line].byEntity[entity.name] = (lines[line].byEntity[entity.name] || 0) + acct.net;
+    });
+  });
+  return lines;
+}
+
+function renderStatements() {
+  var el = document.getElementById('stmtContent');
+  if (!state.entities.length) { el.innerHTML = '<div class="empty-state"><i class="ti ti-report-money"></i><p>Upload trial balances to generate statements</p></div>'; return; }
+  var lines = buildConsolidated();
+  var byType = function(t) { return Object.entries(lines).filter(function(e){ return e[1].type===t; }); };
+  var sum = function(arr) { return arr.reduce(function(s,e){ return s+e[1].total; }, 0); };
+  var revenue = byType('Revenue'), expense = byType('Expense');
+  var assets = byType('Asset'), liabilities = byType('Liability'), equity = byType('Equity');
+  var totalRev = sum(revenue), totalExp = sum(expense), noi = totalRev - totalExp;
+  var totalAssets = sum(assets), totalLiab = sum(liabilities), totalEq = sum(equity);
+  var margin = totalRev ? (noi / totalRev * 100) : 0;
+
+  var html = '<div class="metric-grid">';
+  html += '<div class="metric-card"><div class="metric-label">Total revenue</div><div class="metric-value">' + fmtCurrency(totalRev) + '</div></div>';
+  html += '<div class="metric-card"><div class="metric-label">Total expenses</div><div class="metric-value">' + fmtCurrency(totalExp) + '</div></div>';
+  html += '<div class="metric-card"><div class="metric-label">Net operating income</div><div class="metric-value ' + (noi>=0?'positive':'negative') + '">' + fmtCurrency(noi) + '</div></div>';
+  html += '<div class="metric-card"><div class="metric-label">NOI margin</div><div class="metric-value ' + (margin>=0?'positive':'negative') + '">' + Math.round(margin) + '%</div></div>';
+  html += '</div>';
+
+  html += '<div class="tabs">';
+  ['pnl','bs','entity'].forEach(function(t, i) {
+    var labels = ['Income statement','Balance sheet','By entity'];
+    html += '<div class="tab' + (state.stmtTab===t?' active':'') + '" onclick="state.stmtTab=\'' + t + '\';renderStatements()">' + labels[i] + '</div>';
+  });
+  html += '</div>';
+
+  if (state.stmtTab === 'pnl') {
+    html += '<div class="scrollable"><table class="stmt-table"><thead><tr><th style="width:60%">Line item</th><th>Amount</th></tr></thead><tbody>';
+    html += '<tr class="stmt-section-header"><td colspan="2">Revenue</td></tr>';
+    revenue.forEach(function(e){ html += '<tr><td style="padding-left:20px">' + e[0] + '</td><td>' + fmtCurrency(e[1].total) + '</td></tr>'; });
+    html += '<tr class="stmt-subtotal"><td>Total revenue</td><td>' + fmtCurrency(totalRev) + '</td></tr>';
+    html += '<tr class="stmt-section-header"><td colspan="2">Operating expenses</td></tr>';
+    expense.forEach(function(e){ html += '<tr><td style="padding-left:20px">' + e[0] + '</td><td>' + fmtCurrency(e[1].total) + '</td></tr>'; });
+    html += '<tr class="stmt-subtotal"><td>Total expenses</td><td>' + fmtCurrency(totalExp) + '</td></tr>';
+    html += '<tr class="stmt-total"><td>Net operating income</td><td class="' + (noi>=0?'positive':'negative') + '">' + fmtCurrency(noi) + '</td></tr>';
+    html += '</tbody></table></div>';
+  } else if (state.stmtTab === 'bs') {
+    html += '<div class="scrollable"><table class="stmt-table"><thead><tr><th style="width:60%">Line item</th><th>Amount</th></tr></thead><tbody>';
+    html += '<tr class="stmt-section-header"><td colspan="2">Assets</td></tr>';
+    assets.forEach(function(e){ html += '<tr><td style="padding-left:20px">' + e[0] + '</td><td>' + fmtCurrency(e[1].total) + '</td></tr>'; });
+    html += '<tr class="stmt-subtotal"><td>Total assets</td><td>' + fmtCurrency(totalAssets) + '</td></tr>';
+    html += '<tr class="stmt-section-header"><td colspan="2">Liabilities</td></tr>';
+    liabilities.forEach(function(e){ html += '<tr><td style="padding-left:20px">' + e[0] + '</td><td>' + fmtCurrency(e[1].total) + '</td></tr>'; });
+    html += '<tr class="stmt-subtotal"><td>Total liabilities</td><td>' + fmtCurrency(totalLiab) + '</td></tr>';
+    html += '<tr class="stmt-section-header"><td colspan="2">Equity</td></tr>';
+    equity.forEach(function(e){ html += '<tr><td style="padding-left:20px">' + e[0] + '</td><td>' + fmtCurrency(e[1].total) + '</td></tr>'; });
+    html += '<tr class="stmt-subtotal"><td>Total equity</td><td>' + fmtCurrency(totalEq) + '</td></tr>';
+    html += '<tr class="stmt-total"><td>Total liabilities + equity</td><td>' + fmtCurrency(totalLiab + totalEq) + '</td></tr>';
+    html += '</tbody></table></div>';
+  } else {
+    var allTypes = ['Revenue','Expense','Asset','Liability','Equity'];
+    html += '<div class="scrollable"><table class="stmt-table" style="table-layout:auto"><thead><tr><th>Line item</th><th style="width:80px">Type</th>';
+    state.entities.forEach(function(e){ html += '<th style="max-width:120px">' + e.name.substring(0,14) + (e.name.length>14?'…':'') + '</th>'; });
+    html += '<th>Consolidated</th></tr></thead><tbody>';
+    allTypes.forEach(function(type) {
+      var typeLines = Object.entries(lines).filter(function(e){ return e[1].type===type; });
+      if (!typeLines.length) return;
+      html += '<tr class="stmt-section-header"><td colspan="' + (3+state.entities.length) + '">' + type + '</td></tr>';
+      typeLines.forEach(function(entry) {
+        html += '<tr><td style="padding-left:16px">' + entry[0] + '</td><td><span class="tag tag-' + type.toLowerCase() + '">' + type.substring(0,3) + '</span></td>';
+        state.entities.forEach(function(e){ html += '<td>' + fmtCurrency(entry[1].byEntity[e.name]||0) + '</td>'; });
+        html += '<td><strong>' + fmtCurrency(entry[1].total) + '</strong></td></tr>';
+      });
+      var typeTotal = sum(Object.entries(lines).filter(function(e){ return e[1].type===type; }));
+      html += '<tr class="stmt-subtotal"><td style="padding-left:16px">Total ' + type.toLowerCase() + '</td><td></td>';
+      state.entities.forEach(function(e){
+        var etotal = Object.entries(lines).filter(function(x){ return x[1].type===type; }).reduce(function(s,x){ return s+(x[1].byEntity[e.name]||0); },0);
+        html += '<td>' + fmtCurrency(etotal) + '</td>';
+      });
+      html += '<td><strong>' + fmtCurrency(typeTotal) + '</strong></td></tr>';
+    });
+    html += '</tbody></table></div>';
+  }
+  el.innerHTML = html;
+}
+
+function exportExcel() {
+  if (!state.entities.length) { alert('No data loaded.'); return; }
+  var wb = XLSX.utils.book_new();
+  var lines = buildConsolidated();
+  var period = (document.getElementById('periodLabel').value + ' ' + document.getElementById('periodDate').value).trim();
+  var prep = document.getElementById('preparedBy').value;
+
+  var pnlRows = [['Canvas Residential Partners — Consolidated Income Statement'], [period], prep ? ['Prepared by: ' + prep] : [], [], ['Line item','Amount']];
+  var revenue = Object.entries(lines).filter(function(e){ return e[1].type==='Revenue'; });
+  var expense = Object.entries(lines).filter(function(e){ return e[1].type==='Expense'; });
+  var totalRev = revenue.reduce(function(s,e){ return s+e[1].total; },0);
+  var totalExp = expense.reduce(function(s,e){ return s+e[1].total; },0);
+  pnlRows.push(['REVENUE','']);
+  revenue.forEach(function(e){ pnlRows.push(['  ' + e[0], e[1].total]); });
+  pnlRows.push(['Total Revenue', totalRev]);
+  pnlRows.push(['EXPENSES','']);
+  expense.forEach(function(e){ pnlRows.push(['  ' + e[0], e[1].total]); });
+  pnlRows.push(['Total Expenses', totalExp]);
+  pnlRows.push(['Net Operating Income', totalRev - totalExp]);
+  var wsPNL = XLSX.utils.aoa_to_sheet(pnlRows);
+  XLSX.utils.book_append_sheet(wb, wsPNL, 'Income Statement');
+
+  var bsRows = [['Canvas Residential Partners — Consolidated Balance Sheet'], [period], [], ['Line item','Amount']];
+  ['Asset','Liability','Equity'].forEach(function(type) {
+    var typeLines = Object.entries(lines).filter(function(e){ return e[1].type===type; });
+    bsRows.push([type.toUpperCase(),'']);
+    typeLines.forEach(function(e){ bsRows.push(['  ' + e[0], e[1].total]); });
+    bsRows.push(['Total ' + type, typeLines.reduce(function(s,e){ return s+e[1].total; },0)]);
+  });
+  var wsBS = XLSX.utils.aoa_to_sheet(bsRows);
+  XLSX.utils.book_append_sheet(wb, wsBS, 'Balance Sheet');
+
+  var entityRows = [['Canvas Residential Partners — Consolidated by Entity'], [period], []];
+  var header = ['Line item','Type'].concat(state.entities.map(function(e){ return e.name; })).concat(['Consolidated']);
+  entityRows.push(header);
+  Object.entries(lines).forEach(function(entry) {
+    entityRows.push([entry[0], entry[1].type].concat(state.entities.map(function(e){ return entry[1].byEntity[e.name]||0; })).concat([entry[1].total]));
+  });
+  var wsEntity = XLSX.utils.aoa_to_sheet(entityRows);
+  XLSX.utils.book_append_sheet(wb, wsEntity, 'By Entity');
+
+  var dateStr = new Date().toISOString().substring(0,10);
+  XLSX.writeFile(wb, 'canvas_consolidated_' + dateStr + '.xlsx');
+}
+
+function clearAll() {
+  if (!state.entities.length || confirm('Clear all loaded data?')) {
+    state.entities = [];
+    state.coaMap = {};
+    renderEntityList();
+    ['done-upload','done-map','done-ic'].forEach(function(id){ document.getElementById(id).style.display='none'; });
+    document.getElementById('uploadActions').style.display='none';
+    switchTab('upload');
+    updateFooter();
+  }
+}
+
+function updateFooter() {
+  var el = document.getElementById('footerStatus');
+  el.textContent = state.entities.length ? state.entities.length + ' entit' + (state.entities.length===1?'y':'ies') + ' loaded · ' + new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : 'No data loaded';
+}
+
+function loadDemo() {
+  var demo = [
+    { name: 'The Winnifred', accounts: [
+      {num:'4000',name:'Rental Income',net:285000,type:'Revenue'},
+      {num:'4100',name:'Other Income',net:12000,type:'Revenue'},
+      {num:'5100',name:'Payroll & Benefits',net:48000,type:'Expense'},
+      {num:'5200',name:'Repairs & Maintenance',net:22000,type:'Expense'},
+      {num:'5300',name:'Utilities',net:18000,type:'Expense'},
+      {num:'5400',name:'Insurance',net:9000,type:'Expense'},
+      {num:'5500',name:'Property Management Fee',net:14250,type:'Expense'},
+      {num:'5600',name:'Interest Expense',net:155000,type:'Expense'},
+      {num:'1000',name:'Cash & Equivalents',net:120000,type:'Asset'},
+      {num:'1200',name:'Accounts Receivable',net:35000,type:'Asset'},
+      {num:'1500',name:'Real Property - Net',net:18500000,type:'Asset'},
+      {num:'2000',name:'Mortgage Payable',net:26800000,type:'Liability'},
+      {num:'2100',name:'Accounts Payable',net:45000,type:'Liability'},
+      {num:'2500',name:'Due to CCMC',net:125000,type:'Intercompany'},
+      {num:'3000',name:'Partner Capital',net:-8215000,type:'Equity'}
+    ]},
+    { name: 'CC Groves', accounts: [
+      {num:'4000',name:'Rental Income',net:195000,type:'Revenue'},
+      {num:'4200',name:'Parking Income',net:8500,type:'Revenue'},
+      {num:'5100',name:'Payroll & Benefits',net:32000,type:'Expense'},
+      {num:'5200',name:'Repairs & Maintenance',net:14000,type:'Expense'},
+      {num:'5300',name:'Utilities',net:11000,type:'Expense'},
+      {num:'5400',name:'Insurance',net:6500,type:'Expense'},
+      {num:'5500',name:'Property Management Fee',net:9750,type:'Expense'},
+      {num:'5600',name:'Interest Expense',net:98000,type:'Expense'},
+      {num:'1000',name:'Cash & Equivalents',net:85000,type:'Asset'},
+      {num:'1500',name:'Real Property - Net',net:12200000,type:'Asset'},
+      {num:'2000',name:'Mortgage Payable',net:16500000,type:'Liability'},
+      {num:'2100',name:'Accounts Payable',net:28000,type:'Liability'},
+      {num:'2500',name:'Due to CCMC',net:75000,type:'Intercompany'},
+      {num:'3000',name:'Partner Capital',net:-4282000,type:'Equity'}
+    ]},
+    { name: 'Avery / Oak', accounts: [
+      {num:'4000',name:'Rental Income',net:145000,type:'Revenue'},
+      {num:'5100',name:'Payroll & Benefits',net:24000,type:'Expense'},
+      {num:'5200',name:'Repairs & Maintenance',net:9500,type:'Expense'},
+      {num:'5300',name:'Utilities',net:8200,type:'Expense'},
+      {num:'5500',name:'Property Management Fee',net:7250,type:'Expense'},
+      {num:'5600',name:'Interest Expense',net:72000,type:'Expense'},
+      {num:'1000',name:'Cash & Equivalents',net:62000,type:'Asset'},
+      {num:'1500',name:'Real Property - Net',net:9100000,type:'Asset'},
+      {num:'2000',name:'Mortgage Payable',net:11200000,type:'Liability'},
+      {num:'2500',name:'Due to CCMC',net:50000,type:'Intercompany'},
+      {num:'3000',name:'Partner Capital',net:-2012000,type:'Equity'}
+    ]}
+  ];
+  state.entities = demo;
+  state.coaMap = {};
+  demo.forEach(function(entity) {
+    entity.accounts.forEach(function(acct) {
+      var key = acct.num+'|||'+acct.name;
+      if (!state.coaMap[key]) state.coaMap[key]={num:acct.num,name:acct.name,type:acct.type,consolidatedLine:acct.name,isIC:acct.type==='Intercompany'};
+    });
+  });
+  document.getElementById('periodDate').value = 'March 31, 2026';
+  document.getElementById('preparedBy').value = 'D.W.';
+  renderEntityList();
+  updateFooter();
+  ['done-upload','done-map','done-ic'].forEach(function(id){ document.getElementById(id).style.display=''; });
+  switchTab('statements');
+}
+</script>
+</div>
+</body>
+</html>
