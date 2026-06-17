@@ -583,24 +583,33 @@ function buildConsolidated() {
     });
   });
 
-  // Apply custom eliminations — offset the debit line by the credit line amount
-  // e.g. CIP ($10.1M asset) offset by Contributions ($283K equity credit) → CIP shows net $9.8M
-  // The credit line (Contributions) is fully eliminated; the debit line is reduced by that amount
+  // Apply custom eliminations
+  // The "debit line" is the asset/expense being reduced (e.g. CIP)
+  // The "credit line" is the equity/liability being eliminated (e.g. Contributions)
+  // Result: debit line reduced by the absolute value of the credit line; credit line removed
   if (state.customEliminations) {
     state.customEliminations.forEach(function(pair) {
-      var debitLine = lines[pair.debitLine];
-      var creditLine = lines[pair.creditLine];
+      if (!pair.debitLine || !pair.creditLine) return;
+
+      // Case-insensitive lookup in case of capitalization mismatch
+      var debitKey = Object.keys(lines).find(function(k){ return k.toLowerCase().trim() === pair.debitLine.toLowerCase().trim(); });
+      var creditKey = Object.keys(lines).find(function(k){ return k.toLowerCase().trim() === pair.creditLine.toLowerCase().trim(); });
+
+      var debitLine = debitKey ? lines[debitKey] : null;
+      var creditLine = creditKey ? lines[creditKey] : null;
+
       if (debitLine && creditLine) {
-        // Reduce the debit line (e.g. CIP) by the credit line amount
-        debitLine.total += creditLine.total; // creditLine.total is negative (credit balance), so this reduces
-        // Remove the credit line (e.g. Contributions) — fully eliminated
-        delete lines[pair.creditLine];
-      } else if (debitLine && !creditLine) {
-        // Credit line already eliminated (IC-flagged) — nothing to do
+        // Credit line is a credit balance (negative in TB), so its absolute value reduces the debit line
+        // e.g. CIP = +10,166,633; Contributions = -283,596
+        // Net CIP = 10,166,633 - 283,596 = 9,883,037
+        // We ADD creditLine.total because it's already negative, reducing debitLine
+        debitLine.total += creditLine.total;
+        delete lines[creditKey];
       } else if (!debitLine && creditLine) {
-        // Debit line already eliminated — remove credit line too
-        delete lines[pair.creditLine];
+        // Debit line missing — just remove the credit line
+        delete lines[creditKey];
       }
+      // If credit line missing, nothing to do
     });
   }
 
@@ -1052,4 +1061,3 @@ function loadDemo() {
 </div>
 </body>
 </html>
-
