@@ -8,43 +8,20 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
 <style>
   :root {
-    --bg: #ffffff;
-    --bg2: #f7f7f5;
-    --bg3: #f0efe9;
-    --text: #1a1a1a;
-    --text2: #6b6b6b;
-    --text3: #9a9a9a;
-    --border: rgba(0,0,0,0.12);
-    --border2: rgba(0,0,0,0.22);
-    --success: #0f6e56;
-    --danger: #993c1d;
-    --warning: #854f0b;
-    --info: #185fa5;
-    --success-bg: #e1f5ee;
-    --warning-bg: #faeeda;
-    --danger-bg: #faece7;
-    --info-bg: #e6f1fb;
-    --radius: 8px;
-    --radius-lg: 12px;
+    --bg: #ffffff; --bg2: #f7f7f5; --bg3: #f0efe9;
+    --text: #1a1a1a; --text2: #6b6b6b; --text3: #9a9a9a;
+    --border: rgba(0,0,0,0.12); --border2: rgba(0,0,0,0.22);
+    --success: #0f6e56; --danger: #993c1d; --warning: #854f0b; --info: #185fa5;
+    --success-bg: #e1f5ee; --warning-bg: #faeeda; --danger-bg: #faece7; --info-bg: #e6f1fb;
+    --radius: 8px; --radius-lg: 12px;
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg: #1e1e1c;
-      --bg2: #272724;
-      --bg3: #2f2f2c;
-      --text: #f0efe9;
-      --text2: #a0a09a;
-      --text3: #6b6b66;
-      --border: rgba(255,255,255,0.12);
-      --border2: rgba(255,255,255,0.22);
-      --success: #5dcaa5;
-      --danger: #f0997b;
-      --warning: #ef9f27;
-      --info: #85b7eb;
-      --success-bg: #04342c;
-      --warning-bg: #412402;
-      --danger-bg: #4a1b0c;
-      --info-bg: #042c53;
+      --bg: #1e1e1c; --bg2: #272724; --bg3: #2f2f2c;
+      --text: #f0efe9; --text2: #a0a09a; --text3: #6b6b66;
+      --border: rgba(255,255,255,0.12); --border2: rgba(255,255,255,0.22);
+      --success: #5dcaa5; --danger: #f0997b; --warning: #ef9f27; --info: #85b7eb;
+      --success-bg: #04342c; --warning-bg: #412402; --danger-bg: #4a1b0c; --info-bg: #042c53;
     }
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -57,12 +34,10 @@
   .topbar-sub { font-size: 12px; color: var(--text2); margin-top: 1px; }
   .topbar-actions { margin-left: auto; display: flex; gap: 8px; align-items: center; }
   .banner { background: var(--info-bg); border-bottom: 0.5px solid var(--border); padding: 9px 20px; display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--info); }
-  .banner a { color: var(--info); font-weight: 500; }
   .steps { display: flex; border-bottom: 0.5px solid var(--border); background: var(--bg); overflow-x: auto; }
   .step-tab { padding: 11px 18px; font-size: 13px; color: var(--text2); cursor: pointer; border-bottom: 2px solid transparent; display: flex; align-items: center; gap: 7px; white-space: nowrap; transition: color 0.15s; user-select: none; }
   .step-tab:hover { color: var(--text); }
   .step-tab.active { color: var(--text); border-bottom-color: var(--text); font-weight: 500; }
-  .step-tab.done i.status { color: var(--success); }
   .content { padding: 24px 20px; }
   .section-label { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 14px; }
   .upload-zone { border: 1.5px dashed var(--border2); border-radius: var(--radius-lg); padding: 40px 20px; text-align: center; cursor: pointer; transition: background 0.15s; }
@@ -82,7 +57,6 @@
   .btn-primary { background: var(--text); color: var(--bg); border-color: transparent; }
   .btn-primary:hover { opacity: 0.85; background: var(--text); }
   .btn-sm { padding: 5px 11px; font-size: 12px; }
-  .btn-danger { border-color: var(--danger); color: var(--danger); }
   .coa-table { width: 100%; border-collapse: collapse; font-size: 12px; }
   .coa-table th { text-align: left; padding: 7px 8px; font-size: 11px; font-weight: 600; color: var(--text3); border-bottom: 0.5px solid var(--border); text-transform: uppercase; letter-spacing: 0.05em; }
   .coa-table td { padding: 6px 8px; border-bottom: 0.5px solid var(--border); vertical-align: middle; }
@@ -116,7 +90,6 @@
   .empty-state i { font-size: 36px; display: block; margin-bottom: 14px; color: var(--text3); }
   .empty-state p { font-size: 13px; line-height: 1.6; }
   .alert { padding: 10px 14px; border-radius: var(--radius); font-size: 13px; margin-bottom: 14px; display: flex; align-items: center; gap: 9px; }
-  .alert-warning { background: var(--warning-bg); color: var(--warning); }
   .alert-success { background: var(--success-bg); color: var(--success); }
   .alert-info { background: var(--info-bg); color: var(--info); }
   .alert-danger { background: var(--danger-bg); color: var(--danger); }
@@ -136,7 +109,6 @@
 </head>
 <body>
 <div class="shell">
-
   <div class="topbar">
     <div class="logo"><i class="ti ti-building-bank"></i></div>
     <div>
@@ -149,28 +121,17 @@
       <button class="btn btn-sm btn-primary" onclick="exportExcel()"><i class="ti ti-download"></i>Export Excel</button>
     </div>
   </div>
-
   <div class="banner">
     <i class="ti ti-info-circle"></i>
     <span>Source trial balance files are stored in your SharePoint document library. Upload them here each session, then export the consolidated output back to SharePoint.</span>
   </div>
-
   <div class="steps">
-    <div class="step-tab active" id="tab-upload" onclick="switchTab('upload')">
-      <i class="ti ti-upload"></i>1. Upload TBs<i class="ti ti-check status" id="done-upload" style="display:none;color:var(--success)"></i>
-    </div>
-    <div class="step-tab" id="tab-map" onclick="switchTab('map')">
-      <i class="ti ti-list-tree"></i>2. COA mapping<i class="ti ti-check status" id="done-map" style="display:none;color:var(--success)"></i>
-    </div>
-    <div class="step-tab" id="tab-ic" onclick="switchTab('ic')">
-      <i class="ti ti-arrows-exchange"></i>3. Intercompany<i class="ti ti-check status" id="done-ic" style="display:none;color:var(--success)"></i>
-    </div>
-    <div class="step-tab" id="tab-statements" onclick="switchTab('statements')">
-      <i class="ti ti-report-money"></i>4. Statements
-    </div>
+    <div class="step-tab active" id="tab-upload" onclick="switchTab('upload')"><i class="ti ti-upload"></i>1. Upload TBs<i class="ti ti-check status" id="done-upload" style="display:none;color:var(--success)"></i></div>
+    <div class="step-tab" id="tab-map" onclick="switchTab('map')"><i class="ti ti-list-tree"></i>2. COA mapping<i class="ti ti-check status" id="done-map" style="display:none;color:var(--success)"></i></div>
+    <div class="step-tab" id="tab-ic" onclick="switchTab('ic')"><i class="ti ti-arrows-exchange"></i>3. Intercompany<i class="ti ti-check status" id="done-ic" style="display:none;color:var(--success)"></i></div>
+    <div class="step-tab" id="tab-statements" onclick="switchTab('statements')"><i class="ti ti-report-money"></i>4. Statements</div>
   </div>
 
-  <!-- STEP 1: UPLOAD -->
   <div class="content" id="view-upload">
     <div class="section-label">Entity trial balances</div>
     <div class="upload-zone" id="dropZone" onclick="document.getElementById('fileInput').click()"
@@ -190,12 +151,11 @@
     </div>
   </div>
 
-  <!-- STEP 2: COA MAPPING -->
   <div class="content" id="view-map" style="display:none">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px">
       <div>
         <div class="section-label" style="margin:0">Chart of accounts mapping</div>
-        <div style="font-size:12px;color:var(--text2);margin-top:3px">Edit "Consolidated line" to merge accounts across entities. Check IC for intercompany accounts.</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:3px">Edit "Consolidated line" to merge accounts across entities. Check IC for symmetric intercompany accounts (e.g. Due to/from).</div>
       </div>
       <div style="display:flex;gap:8px">
         <button class="btn btn-sm" onclick="autoGroupAccounts()"><i class="ti ti-wand"></i>Auto-group</button>
@@ -205,19 +165,17 @@
     <div id="coaContent"><div class="empty-state"><i class="ti ti-list-tree"></i><p>Upload trial balances first</p></div></div>
   </div>
 
-  <!-- STEP 3: INTERCOMPANY -->
   <div class="content" id="view-ic" style="display:none">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px">
       <div>
         <div class="section-label" style="margin:0">Intercompany eliminations</div>
-        <div style="font-size:12px;color:var(--text2);margin-top:3px">Accounts marked IC are eliminated from consolidated totals. Net should equal $0 for balanced entries.</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:3px">IC-flagged accounts net to zero. Custom pairs reduce a debit line by a credit line.</div>
       </div>
       <button class="btn btn-sm btn-primary" onclick="switchTab('statements')"><i class="ti ti-report-money"></i>Generate statements</button>
     </div>
     <div id="icContent"><div class="empty-state"><i class="ti ti-arrows-exchange"></i><p>No intercompany accounts detected yet</p></div></div>
   </div>
 
-  <!-- STEP 4: STATEMENTS -->
   <div class="content" id="view-statements" style="display:none">
     <div class="period-bar">
       <label>Period:</label>
@@ -233,21 +191,15 @@
     <span>Canvas Residential Partners · For internal use only</span>
     <span id="footerStatus">No data loaded</span>
   </div>
-
 </div>
-
 <script>
-var state = { entities: [], coaMap: {}, stmtTab: 'pnl' };
+var state = { entities: [], coaMap: {}, stmtTab: 'pnl', customEliminations: [] };
 var ENTITY_COLORS = ['#185fa5','#0f6e56','#854f0b','#993556','#533ab7','#3b6d11','#993c1d'];
-
 var TYPE_PATTERNS = [
-  { pattern: /^1/, type: 'Asset' },
-  { pattern: /^2/, type: 'Liability' },
-  { pattern: /^3/, type: 'Equity' },
-  { pattern: /^4/, type: 'Revenue' },
+  { pattern: /^1/, type: 'Asset' }, { pattern: /^2/, type: 'Liability' },
+  { pattern: /^3/, type: 'Equity' }, { pattern: /^4/, type: 'Revenue' },
   { pattern: /^[5-9]/, type: 'Expense' },
 ];
-
 var IC_KEYWORDS = ['due to','due from','intercompany','inter-co','inter co','management fee payable','mgmt fee payable','related party'];
 var EXPENSE_KEYWORDS = ['expense','cost','depreciation','amortization','interest','tax','insurance','utilities','repair','maintenance','payroll','salary','wage','benefit','management fee','admin','legal','accounting','marketing'];
 var REVENUE_KEYWORDS = ['income','revenue','rent','parking','laundry','fee','rebate','interest income','other income'];
@@ -256,7 +208,6 @@ function guessType(num, name) {
   var n = String(num || '').trim();
   var nm = (name || '').toLowerCase();
   for (var i = 0; i < IC_KEYWORDS.length; i++) { if (nm.includes(IC_KEYWORDS[i])) return 'Intercompany'; }
-  // Handle Yardi hyphenated format e.g. "11020-000" or "1001-0001" — use first digit(s) only
   var prefix = n.replace(/-.*$/, '').replace(/^(\d).*/, '$1');
   for (var i = 0; i < TYPE_PATTERNS.length; i++) { if (TYPE_PATTERNS[i].pattern.test(prefix)) return TYPE_PATTERNS[i].type; }
   for (var i = 0; i < REVENUE_KEYWORDS.length; i++) { if (nm.includes(REVENUE_KEYWORDS[i])) return 'Revenue'; }
@@ -264,18 +215,10 @@ function guessType(num, name) {
   return 'Expense';
 }
 
-function fmtCurrency(v, parens) {
+function fmtCurrency(v) {
   if (v === null || v === undefined || isNaN(v)) return '-';
   var r = Math.round(v);
-  if (parens && r < 0) return '(' + Math.abs(r).toLocaleString('en-US') + ')';
   return (r < 0 ? '-' : '') + '$' + Math.abs(r).toLocaleString('en-US');
-}
-
-// TB sign convention: revenue/liability/equity = negative (credit balances)
-// Flip these to positive for display purposes
-function displayAmt(net, type) {
-  if (type === 'Revenue' || type === 'Liability' || type === 'Equity') return -net;
-  return net;
 }
 
 function switchTab(t) {
@@ -306,34 +249,23 @@ function handleFiles(files) {
 }
 
 function detectYardi(rows) {
-  // Yardi TBs have metadata rows at top, split header across 2 rows, data starts after
-  // Look for a row where col0 matches account number pattern like "11020-000" or "4000"
   for (var i = 0; i < Math.min(rows.length, 15); i++) {
     var cell = String(rows[i][0] || '').trim();
-    if (/^\d{3,6}(-\d{3,4})?$/.test(cell)) return i; // return data start row index
+    if (/^\d{3,6}(-\d{3,4})?$/.test(cell)) return i;
   }
   return -1;
 }
 
 function parseTrialBalance(filename, rows) {
   if (!rows || rows.length < 2) return;
-
-  // Try Yardi detection first
   var yardiDataStart = detectYardi(rows);
   var accounts = [];
-
   if (yardiDataStart >= 2) {
-    // Yardi format: scan header rows above data for column positions
-    // Default Yardi layout: col0=acct#, col1=name, col2=bal fwd, col3=debit, col4=credit, col5=ending balance
-    // Find which column is "ending" by scanning header rows
-    var endingCol = 5; // default
-    var debitCol = 3, creditCol = 4;
+    var endingCol = 5;
     for (var hi = 0; hi < yardiDataStart; hi++) {
       var hrow = rows[hi].map(function(c){ return String(c||'').toLowerCase().trim(); });
       for (var ci = 0; ci < hrow.length; ci++) {
-        if (hrow[ci].includes('ending') || hrow[ci].includes('balance') && ci > 3) endingCol = ci;
-        if (hrow[ci] === 'debit' || hrow[ci] === 'dr') debitCol = ci;
-        if (hrow[ci] === 'credit' || hrow[ci] === 'cr') creditCol = ci;
+        if (hrow[ci].includes('ending') || (hrow[ci].includes('balance') && ci > 3)) endingCol = ci;
       }
     }
     for (var i = yardiDataStart; i < rows.length; i++) {
@@ -342,12 +274,10 @@ function parseTrialBalance(filename, rows) {
       var acctName = String(row[1] || '').trim();
       if (!acctNum || !/^\d/.test(acctNum)) continue;
       if (acctName.toLowerCase() === 'total' || acctName.toLowerCase().startsWith('total ')) continue;
-      // Use ending balance column (already net)
       var net = parseFloat(String(row[endingCol] || '0').replace(/[,$]/g,'')) || 0;
       accounts.push({ num: acctNum, name: acctName, net: net, type: guessType(acctNum, acctName) });
     }
   } else {
-    // Generic format: use header row detection
     var header = rows[0].map(function(h){ return String(h).toLowerCase().trim(); });
     var find = function(keywords) {
       for (var i = 0; i < header.length; i++) {
@@ -363,23 +293,17 @@ function parseTrialBalance(filename, rows) {
     var drIdx = find(['debit','dr amount','debit amount']);
     var crIdx = find(['credit','cr amount','credit amount']);
     var netIdx = find(['ending','balance','net','amount']);
-
     for (var i = 1; i < rows.length; i++) {
       var row = rows[i];
       var acctNum = String(row[acctIdx] || '').trim();
       var acctName = String(row[nameIdx] || '').trim();
       if (!acctNum && !acctName) continue;
       var net = 0;
-      if (netIdx >= 0) {
-        net = parseFloat(String(row[netIdx]).replace(/[,$]/g,'')) || 0;
-      } else if (drIdx >= 0 && crIdx >= 0) {
-        net = (parseFloat(String(row[drIdx]).replace(/[,$]/g,'')) || 0) - (parseFloat(String(row[crIdx]).replace(/[,$]/g,'')) || 0);
-      }
+      if (netIdx >= 0) { net = parseFloat(String(row[netIdx]).replace(/[,$]/g,'')) || 0; }
+      else if (drIdx >= 0 && crIdx >= 0) { net = (parseFloat(String(row[drIdx]).replace(/[,$]/g,'')) || 0) - (parseFloat(String(row[crIdx]).replace(/[,$]/g,'')) || 0); }
       accounts.push({ num: acctNum, name: acctName, net: net, type: guessType(acctNum, acctName) });
     }
   }
-
-  // For Yardi files, use the property name from row 1 instead of filename
   var entityName = filename.replace(/\.(xlsx|xls|csv)$/i, '').replace(/[-_]/g, ' ').trim();
   if (yardiDataStart >= 2 && rows[0] && rows[0][0]) {
     var yardiName = String(rows[0][0]).trim();
@@ -401,7 +325,11 @@ function buildCOAMap() {
     entity.accounts.forEach(function(acct) {
       var key = acct.num + '|||' + acct.name;
       if (!state.coaMap[key]) {
-        state.coaMap[key] = { num: acct.num, name: acct.name, type: acct.type, consolidatedLine: acct.name, isIC: acct.type === 'Intercompany' };
+        // baseType = the real statement category (never mutated by IC flag)
+        // isIC = symmetric intercompany flag, separate from type
+        var isIC = acct.type === 'Intercompany';
+        var baseType = isIC ? 'Liability' : acct.type;
+        state.coaMap[key] = { num: acct.num, name: acct.name, type: baseType, consolidatedLine: acct.name, isIC: isIC };
       }
     });
   });
@@ -421,7 +349,7 @@ function renderEntityList() {
 function removeEntity(i) {
   state.entities.splice(i, 1);
   state.coaMap = {};
-  state.entities.forEach(function(e){ e.accounts.forEach(function(a){ var key = a.num+'|||'+a.name; if(!state.coaMap[key]) state.coaMap[key]={num:a.num,name:a.name,type:a.type,consolidatedLine:a.name,isIC:a.type==='Intercompany'}; }); });
+  buildCOAMap();
   renderEntityList();
   if (!state.entities.length) document.getElementById('done-upload').style.display = 'none';
   updateFooter();
@@ -431,7 +359,7 @@ function renderCOA() {
   var el = document.getElementById('coaContent');
   var keys = Object.keys(state.coaMap);
   if (!keys.length) { el.innerHTML = '<div class="empty-state"><i class="ti ti-list-tree"></i><p>Upload trial balances first</p></div>'; return; }
-  var typeOrder = ['Asset','Liability','Equity','Revenue','Expense','Intercompany'];
+  var typeOrder = ['Asset','Liability','Equity','Revenue','Expense'];
   keys.sort(function(a,b){
     var ta = typeOrder.indexOf(state.coaMap[a].type), tb = typeOrder.indexOf(state.coaMap[b].type);
     if (ta !== tb) return ta - tb;
@@ -441,18 +369,22 @@ function renderCOA() {
   keys.forEach(function(k) {
     var m = state.coaMap[k];
     var kSafe = k.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
-    var tagClass = 'tag-' + m.type.toLowerCase();
     html += '<tr><td style="color:var(--text2);font-family:monospace">' + (m.num||'') + '</td><td style="color:var(--text2)">' + m.name + '</td>';
-    html += '<td><select onchange="state.coaMap[\'' + kSafe + '\'].type=this.value;renderCOA()" style="font-size:11px"><option' + (m.type==='Asset'?' selected':'') + '>Asset</option><option' + (m.type==='Liability'?' selected':'') + '>Liability</option><option' + (m.type==='Equity'?' selected':'') + '>Equity</option><option' + (m.type==='Revenue'?' selected':'') + '>Revenue</option><option' + (m.type==='Expense'?' selected':'') + '>Expense</option><option' + (m.type==='Intercompany'?' selected':'') + '>Intercompany</option></select></td>';
-    html += '<td><input type="text" value="' + m.consolidatedLine.replace(/"/g,'&quot;') + '" style="width:100%" onchange="state.coaMap[\'' + kSafe + '\'].consolidatedLine=this.value"></td>';
-    html += '<td style="text-align:center"><input type="checkbox"' + (m.isIC?' checked':'') + ' onchange="state.coaMap[\'' + kSafe + '\'].isIC=this.checked;state.coaMap[\'' + kSafe + '\'].type=this.checked?\'Intercompany\':state.coaMap[\'' + kSafe + '\'].type"></td>';
+    html += '<td><select onchange="setType(\'' + kSafe + '\',this.value)" style="font-size:11px"><option' + (m.type==='Asset'?' selected':'') + '>Asset</option><option' + (m.type==='Liability'?' selected':'') + '>Liability</option><option' + (m.type==='Equity'?' selected':'') + '>Equity</option><option' + (m.type==='Revenue'?' selected':'') + '>Revenue</option><option' + (m.type==='Expense'?' selected':'') + '>Expense</option></select></td>';
+    html += '<td><input type="text" value="' + m.consolidatedLine.replace(/"/g,'&quot;') + '" style="width:100%" onchange="setLine(\'' + kSafe + '\',this.value)"></td>';
+    html += '<td style="text-align:center"><input type="checkbox"' + (m.isIC?' checked':'') + ' onchange="setIC(\'' + kSafe + '\',this.checked)"></td>';
     html += '</tr>';
   });
   html += '</tbody></table></div>';
-  html += '<div style="margin-top:12px;font-size:12px;color:var(--text2)"><i class="ti ti-info-circle" style="vertical-align:-2px"></i> Edit "Consolidated line" to merge accounts with identical names across entities. Check IC to flag intercompany balances for elimination.</div>';
+  html += '<div style="margin-top:12px;font-size:12px;color:var(--text2)"><i class="ti ti-info-circle" style="vertical-align:-2px"></i> The IC checkbox flags symmetric intercompany balances (e.g. Due to/from) for full elimination. It does NOT change the account type. For asymmetric eliminations (e.g. CIP vs Contributions), use custom pairs on the next tab instead.</div>';
   el.innerHTML = html;
   document.getElementById('done-map').style.display = '';
 }
+
+// Separate handlers so IC flag NEVER mutates type
+function setType(k, v) { if (state.coaMap[k]) { state.coaMap[k].type = v; renderCOA(); } }
+function setLine(k, v) { if (state.coaMap[k]) state.coaMap[k].consolidatedLine = v; }
+function setIC(k, checked) { if (state.coaMap[k]) state.coaMap[k].isIC = checked; }
 
 function autoGroupAccounts() {
   var groups = {};
@@ -468,26 +400,20 @@ function autoGroupAccounts() {
 function renderIC() {
   var el = document.getElementById('icContent');
   var icKeys = Object.keys(state.coaMap).filter(function(k){ return state.coaMap[k].isIC; });
-
-  // Build standard IC line map
-  var lineMap = {};
-  icKeys.forEach(function(k) {
-    var m = state.coaMap[k];
-    var line = m.consolidatedLine;
-    if (!lineMap[line]) lineMap[line] = {};
-    state.entities.forEach(function(e) {
-      var match = e.accounts.find(function(a){ return (a.num+'|||'+a.name) === k; });
-      if (match) lineMap[line][e.name] = (lineMap[line][e.name] || 0) + match.net;
-    });
-  });
-
-  // Build custom elimination pairs map
   if (!state.customEliminations) state.customEliminations = [];
-
   var html = '';
 
-  // Standard IC section
   if (icKeys.length) {
+    var lineMap = {};
+    icKeys.forEach(function(k) {
+      var m = state.coaMap[k];
+      var line = m.consolidatedLine;
+      if (!lineMap[line]) lineMap[line] = {};
+      state.entities.forEach(function(e) {
+        var match = e.accounts.find(function(a){ return (a.num+'|||'+a.name) === k; });
+        if (match) lineMap[line][e.name] = (lineMap[line][e.name] || 0) + match.net;
+      });
+    });
     var allBalanced = true;
     Object.keys(lineMap).forEach(function(line) {
       var net = Object.values(lineMap[line]).reduce(function(s,v){ return s+v; }, 0);
@@ -509,53 +435,46 @@ function renderIC() {
     });
     html += '</tbody></table></div>';
   } else {
-    html += '<div class="alert alert-info"><i class="ti ti-info-circle"></i>No IC accounts flagged yet. Check the IC box on COA mapping for due-to/from accounts.</div>';
+    html += '<div class="alert alert-info"><i class="ti ti-info-circle"></i>No IC accounts flagged. Use custom pairs below for asymmetric eliminations.</div>';
   }
 
-  // Custom eliminations section
   html += '<div style="border-top:0.5px solid var(--border);padding-top:16px;margin-top:4px">';
   html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">';
   html += '<div><div class="section-label" style="margin:0">Custom elimination pairs</div>';
-  html += '<div style="font-size:12px;color:var(--text2);margin-top:3px">Use to eliminate cross-entity items like Contributed Capital vs Construction in Progress</div></div>';
+  html += '<div style="font-size:12px;color:var(--text2);margin-top:3px">Debit line (asset/investment) is reduced by the Credit line (equity/contribution), which is then removed.</div></div>';
   html += '<button class="btn btn-sm" onclick="addCustomElimination()"><i class="ti ti-plus"></i>Add pair</button></div>';
 
   if (state.customEliminations.length === 0) {
     html += '<div style="font-size:13px;color:var(--text2);padding:12px 0">No custom eliminations defined. Click "Add pair" to create one.</div>';
   } else {
-    // Get all consolidated line names for dropdowns
     var allLines = Object.values(state.coaMap).map(function(m){ return m.consolidatedLine; });
     allLines = allLines.filter(function(v,i,a){ return a.indexOf(v)===i; }).sort();
-
-    html += '<table class="coa-table"><thead><tr><th>Debit line (reduce)</th><th>Credit line (reduce)</th><th style="text-align:right">Debit entity amt</th><th style="text-align:right">Credit entity amt</th><th style="text-align:right">Difference</th><th></th></tr></thead><tbody>';
+    html += '<table class="coa-table"><thead><tr><th>Debit line (reduce)</th><th>Credit line (remove)</th><th style="text-align:right">Debit amt</th><th style="text-align:right">Credit amt</th><th style="text-align:right">Net</th><th></th></tr></thead><tbody>';
     state.customEliminations.forEach(function(pair, idx) {
-      // Calculate amounts
       var debitAmt = 0, creditAmt = 0;
       state.entities.forEach(function(e) {
         e.accounts.forEach(function(a) {
-          var key = a.num+'|||'+a.name;
-          var m = state.coaMap[key];
+          var m = state.coaMap[a.num+'|||'+a.name];
           if (!m) return;
           if (m.consolidatedLine === pair.debitLine) debitAmt += a.net;
           if (m.consolidatedLine === pair.creditLine) creditAmt += a.net;
         });
       });
-      var diff = debitAmt + creditAmt; // should net to 0
-      var ok = Math.abs(diff) < 1;
-      var opts = allLines.map(function(l){ return '<option value="' + l + '"' + (l===pair.debitLine?' selected':'') + '>' + l + '</option>'; }).join('');
-      var opts2 = allLines.map(function(l){ return '<option value="' + l + '"' + (l===pair.creditLine?' selected':'') + '>' + l + '</option>'; }).join('');
+      var net = debitAmt + creditAmt;
+      var opts = allLines.map(function(l){ return '<option value="' + l.replace(/"/g,'&quot;') + '"' + (l===pair.debitLine?' selected':'') + '>' + l + '</option>'; }).join('');
+      var opts2 = allLines.map(function(l){ return '<option value="' + l.replace(/"/g,'&quot;') + '"' + (l===pair.creditLine?' selected':'') + '>' + l + '</option>'; }).join('');
       html += '<tr>';
       html += '<td><select onchange="state.customEliminations['+idx+'].debitLine=this.value;renderIC()" style="width:100%;font-size:11px">' + opts + '</select></td>';
       html += '<td><select onchange="state.customEliminations['+idx+'].creditLine=this.value;renderIC()" style="width:100%;font-size:11px">' + opts2 + '</select></td>';
       html += '<td style="text-align:right">' + fmtCurrency(debitAmt) + '</td>';
       html += '<td style="text-align:right">' + fmtCurrency(creditAmt) + '</td>';
-      html += '<td style="text-align:right" class="' + (ok?'ic-net-ok':'ic-net-bad') + '">' + fmtCurrency(diff) + '</td>';
+      html += '<td style="text-align:right">' + fmtCurrency(net) + '</td>';
       html += '<td><button class="btn btn-sm" style="color:var(--danger);border-color:var(--danger)" onclick="state.customEliminations.splice('+idx+',1);renderIC()"><i class="ti ti-x"></i></button></td>';
       html += '</tr>';
     });
     html += '</tbody></table>';
   }
   html += '</div>';
-
   el.innerHTML = html;
   document.getElementById('done-ic').style.display = '';
 }
@@ -568,51 +487,36 @@ function addCustomElimination() {
   renderIC();
 }
 
+// Build consolidated lines. IC-flagged accounts are excluded (they net to zero).
+// Custom eliminations reduce the debit line by the credit line, then remove the credit line.
 function buildConsolidated() {
   var lines = {};
   state.entities.forEach(function(entity) {
     entity.accounts.forEach(function(acct) {
-      var key = acct.num + '|||' + acct.name;
-      var mapping = state.coaMap[key];
-      if (!mapping || mapping.isIC) return;
+      var mapping = state.coaMap[acct.num + '|||' + acct.name];
+      if (!mapping) return;
+      if (mapping.isIC) return; // symmetric IC fully eliminated
       var line = mapping.consolidatedLine;
-      var type = mapping.type;
-      if (!lines[line]) lines[line] = { type: type, total: 0, byEntity: {} };
+      if (!lines[line]) lines[line] = { type: mapping.type, total: 0, byEntity: {} };
       lines[line].total += acct.net;
       lines[line].byEntity[entity.name] = (lines[line].byEntity[entity.name] || 0) + acct.net;
     });
   });
-
-  // Apply custom eliminations
-  // The "debit line" is the asset/expense being reduced (e.g. CIP)
-  // The "credit line" is the equity/liability being eliminated (e.g. Contributions)
-  // Result: debit line reduced by the absolute value of the credit line; credit line removed
   if (state.customEliminations) {
     state.customEliminations.forEach(function(pair) {
       if (!pair.debitLine || !pair.creditLine) return;
-
-      // Case-insensitive lookup in case of capitalization mismatch
       var debitKey = Object.keys(lines).find(function(k){ return k.toLowerCase().trim() === pair.debitLine.toLowerCase().trim(); });
       var creditKey = Object.keys(lines).find(function(k){ return k.toLowerCase().trim() === pair.creditLine.toLowerCase().trim(); });
-
       var debitLine = debitKey ? lines[debitKey] : null;
       var creditLine = creditKey ? lines[creditKey] : null;
-
       if (debitLine && creditLine) {
-        // Credit line is a credit balance (negative in TB), so its absolute value reduces the debit line
-        // e.g. CIP = +10,166,633; Contributions = -283,596
-        // Net CIP = 10,166,633 - 283,596 = 9,883,037
-        // We ADD creditLine.total because it's already negative, reducing debitLine
         debitLine.total += creditLine.total;
         delete lines[creditKey];
       } else if (!debitLine && creditLine) {
-        // Debit line missing — just remove the credit line
         delete lines[creditKey];
       }
-      // If credit line missing, nothing to do
     });
   }
-
   return lines;
 }
 
@@ -624,7 +528,6 @@ function renderStatements() {
   var sum = function(arr) { return arr.reduce(function(s,e){ return s+e[1].total; }, 0); };
   var revenue = byType('Revenue'), expense = byType('Expense');
   var assets = byType('Asset'), liabilities = byType('Liability'), equity = byType('Equity');
-  // Flip signs: revenue/liability/equity are credit balances (negative in TB), display as positive
   var totalRev = -sum(revenue), totalExp = sum(expense), noi = totalRev - totalExp;
   var totalAssets = sum(assets), totalLiab = -sum(liabilities), totalEq = -sum(equity);
   var margin = totalRev ? (noi / totalRev * 100) : 0;
@@ -658,7 +561,7 @@ function renderStatements() {
     var balanced = Math.abs(diff) < 1;
     html += balanced
       ? '<div class="alert alert-success"><i class="ti ti-check"></i>Balance sheet is in balance — assets equal liabilities + equity.</div>'
-      : '<div class="alert alert-danger"><i class="ti ti-alert-triangle"></i>Out of balance by ' + fmtCurrency(Math.abs(diff)) + '. Check intercompany eliminations or account type assignments.</div>';
+      : '<div class="alert alert-danger"><i class="ti ti-alert-triangle"></i>Out of balance by ' + fmtCurrency(Math.abs(diff)) + '. Check eliminations or account type assignments.</div>';
     html += '<div class="scrollable"><table class="stmt-table"><thead><tr><th style="width:60%">Line item</th><th>Amount</th></tr></thead><tbody>';
     html += '<tr class="stmt-section-header"><td colspan="2">Assets</td></tr>';
     assets.forEach(function(e){ html += '<tr><td style="padding-left:20px">' + e[0] + '</td><td>' + fmtCurrency(e[1].total) + '</td></tr>'; });
@@ -687,10 +590,10 @@ function renderStatements() {
         state.entities.forEach(function(e){ html += '<td>' + fmtCurrency((entry[1].byEntity[e.name]||0)*flip) + '</td>'; });
         html += '<td><strong>' + fmtCurrency(entry[1].total*flip) + '</strong></td></tr>';
       });
-      var typeTotal = sum(Object.entries(lines).filter(function(e){ return e[1].type===type; })) * flip;
+      var typeTotal = sum(typeLines) * flip;
       html += '<tr class="stmt-subtotal"><td style="padding-left:16px">Total ' + type.toLowerCase() + '</td><td></td>';
       state.entities.forEach(function(e){
-        var etotal = Object.entries(lines).filter(function(x){ return x[1].type===type; }).reduce(function(s,x){ return s+(x[1].byEntity[e.name]||0); },0) * flip;
+        var etotal = typeLines.reduce(function(s,x){ return s+(x[1].byEntity[e.name]||0); },0) * flip;
         html += '<td>' + fmtCurrency(etotal) + '</td>';
       });
       html += '<td><strong>' + fmtCurrency(typeTotal) + '</strong></td></tr>';
@@ -708,283 +611,165 @@ function exportExcel() {
   var prep = document.getElementById('preparedBy').value;
   var dateStr = new Date().toISOString().substring(0,10);
 
-  // Style helpers
-  var NAVY = '1F3864', LTBLUE = 'D6E4F0', MIDBLUE = 'AED6F1', WHITE = 'FFFFFF', LTGRAY = 'F2F2F2', DARKGRAY = '595959';
-  var headerFont = { name: 'Arial', sz: 11, bold: true, color: { rgb: WHITE } };
-  var titleFont  = { name: 'Arial', sz: 14, bold: true, color: { rgb: NAVY } };
-  var subFont    = { name: 'Arial', sz: 10, italic: true, color: { rgb: DARKGRAY } };
-  var bodyFont   = { name: 'Arial', sz: 10 };
-  var boldFont   = { name: 'Arial', sz: 10, bold: true };
-  var sectionFont= { name: 'Arial', sz: 10, bold: true, color: { rgb: NAVY } };
-  var totalFont  = { name: 'Arial', sz: 10, bold: true, color: { rgb: WHITE } };
-  var numFmt = '$#,##0;($#,##0);"-"';
-  var navyFill = { type: 'pattern', pattern: 'solid', fgColor: { rgb: NAVY } };
-  var ltblueFill= { type: 'pattern', pattern: 'solid', fgColor: { rgb: LTBLUE } };
-  var ltgrayFill= { type: 'pattern', pattern: 'solid', fgColor: { rgb: LTGRAY } };
-  var midFill   = { type: 'pattern', pattern: 'solid', fgColor: { rgb: MIDBLUE } };
-  var thinBorder = { style: 'thin', color: { rgb: 'BFBFBF' } };
-  var border = { top: thinBorder, bottom: thinBorder, left: thinBorder, right: thinBorder };
-  var thickBottom = { top: thinBorder, bottom: { style: 'medium', color: { rgb: NAVY } }, left: thinBorder, right: thinBorder };
+  var NAVY='1F3864', LTBLUE='D6E4F0', MIDBLUE='AED6F1', WHITE='FFFFFF', LTGRAY='F2F2F2', DARKGRAY='595959';
+  var headerFont={name:'Arial',sz:11,bold:true,color:{rgb:WHITE}};
+  var titleFont={name:'Arial',sz:14,bold:true,color:{rgb:NAVY}};
+  var subFont={name:'Arial',sz:10,italic:true,color:{rgb:DARKGRAY}};
+  var bodyFont={name:'Arial',sz:10};
+  var boldFont={name:'Arial',sz:10,bold:true};
+  var sectionFont={name:'Arial',sz:10,bold:true,color:{rgb:NAVY}};
+  var totalFont={name:'Arial',sz:10,bold:true,color:{rgb:WHITE}};
+  var numFmt='$#,##0;($#,##0);"-"';
+  var navyFill={type:'pattern',pattern:'solid',fgColor:{rgb:NAVY}};
+  var ltblueFill={type:'pattern',pattern:'solid',fgColor:{rgb:LTBLUE}};
+  var ltgrayFill={type:'pattern',pattern:'solid',fgColor:{rgb:LTGRAY}};
+  var midFill={type:'pattern',pattern:'solid',fgColor:{rgb:MIDBLUE}};
+  var thinBorder={style:'thin',color:{rgb:'BFBFBF'}};
+  var border={top:thinBorder,bottom:thinBorder,left:thinBorder,right:thinBorder};
+  var thickBottom={top:thinBorder,bottom:{style:'medium',color:{rgb:NAVY}},left:thinBorder,right:thinBorder};
 
-  function cell(v, font, fill, numFmtStr, alignment, bdr) {
-    var c = { v: v, t: typeof v === 'number' ? 'n' : 's' };
-    var s = {};
-    if (font) s.font = font;
-    if (fill) s.fill = fill;
-    if (numFmtStr) { s.numFmt = numFmtStr; }
-    if (alignment) s.alignment = alignment;
-    if (bdr) s.border = bdr;
-    c.s = s;
-    return c;
-  }
+  function cell(v,font,fill,nf,align,bdr){var c={v:v,t:typeof v==='number'?'n':'s'};var s={};if(font)s.font=font;if(fill)s.fill=fill;if(nf)s.numFmt=nf;if(align)s.alignment=align;if(bdr)s.border=bdr;c.s=s;return c;}
+  function buildSheet(buildRows){var ws={};var data=buildRows();var maxRow=0,maxCol=0;data.forEach(function(row){row.cells.forEach(function(c,ci){ws[XLSX.utils.encode_cell({r:row.r,c:ci})]=c;if(ci>maxCol)maxCol=ci;});if(row.r>maxRow)maxRow=row.r;if(row.merge){if(!ws['!merges'])ws['!merges']=[];ws['!merges'].push(row.merge);}});ws['!ref']=XLSX.utils.encode_range({s:{r:0,c:0},e:{r:maxRow,c:maxCol}});return ws;}
 
-  function buildSheet(title, buildRows) {
-    var ws = {};
-    var data = buildRows();
-    var maxRow = 0, maxCol = 0;
-    data.forEach(function(row) {
-      row.cells.forEach(function(c, ci) {
-        var ref = XLSX.utils.encode_cell({ r: row.r, c: ci });
-        ws[ref] = c;
-        if (ci > maxCol) maxCol = ci;
-      });
-      if (row.r > maxRow) maxRow = row.r;
-      if (row.merge) {
-        if (!ws['!merges']) ws['!merges'] = [];
-        ws['!merges'].push(row.merge);
-      }
-    });
-    ws['!ref'] = XLSX.utils.encode_range({ s: { r: 0, c: 0 }, e: { r: maxRow, c: maxCol } });
-    return ws;
-  }
+  var revenue=Object.entries(lines).filter(function(e){return e[1].type==='Revenue';});
+  var expense=Object.entries(lines).filter(function(e){return e[1].type==='Expense';});
+  var assets=Object.entries(lines).filter(function(e){return e[1].type==='Asset';});
+  var liabs=Object.entries(lines).filter(function(e){return e[1].type==='Liability';});
+  var equity=Object.entries(lines).filter(function(e){return e[1].type==='Equity';});
+  var totalRev=-revenue.reduce(function(s,e){return s+e[1].total;},0);
+  var totalExp=expense.reduce(function(s,e){return s+e[1].total;},0);
+  var noi=totalRev-totalExp;
+  var totalAssets=assets.reduce(function(s,e){return s+e[1].total;},0);
+  var totalLiab=-liabs.reduce(function(s,e){return s+e[1].total;},0);
+  var totalEq=-equity.reduce(function(s,e){return s+e[1].total;},0);
+  var diff=totalAssets-totalLiab-totalEq;
 
-  var revenue = Object.entries(lines).filter(function(e){ return e[1].type==='Revenue'; });
-  var expense  = Object.entries(lines).filter(function(e){ return e[1].type==='Expense'; });
-  var assets   = Object.entries(lines).filter(function(e){ return e[1].type==='Asset'; });
-  var liabs    = Object.entries(lines).filter(function(e){ return e[1].type==='Liability'; });
-  var equity   = Object.entries(lines).filter(function(e){ return e[1].type==='Equity'; });
-  var totalRev = -revenue.reduce(function(s,e){ return s+e[1].total; },0);
-  var totalExp =  expense.reduce(function(s,e){ return s+e[1].total; },0);
-  var noi = totalRev - totalExp;
-  var totalAssets = assets.reduce(function(s,e){ return s+e[1].total; },0);
-  var totalLiab = -liabs.reduce(function(s,e){ return s+e[1].total; },0);
-  var totalEq   = -equity.reduce(function(s,e){ return s+e[1].total; },0);
-  var diff = totalAssets - totalLiab - totalEq;
-
-  // ── P&L SHEET ──
-  var wsPNL = buildSheet('Income Statement', function() {
-    var rows = [];
-    var r = 0;
-    var push = function(cells, merge) { rows.push({ r: r, cells: cells, merge: merge }); r++; };
-    var blank = function() { push([cell('', bodyFont)]); };
-
-    push([cell('Canvas Residential Partners', titleFont, null, null, { horizontal: 'left' })],
-      { s: { r: 0, c: 0 }, e: { r: 0, c: 1 } });
-    push([cell('Consolidated Income Statement', subFont, null, null, { horizontal: 'left' })],
-      { s: { r: 1, c: 0 }, e: { r: 1, c: 1 } });
-    push([cell(period, subFont, null, null, { horizontal: 'left' })],
-      { s: { r: 2, c: 0 }, e: { r: 2, c: 1 } });
-    if (prep) { push([cell('Prepared by: ' + prep, subFont)]); }
+  var wsPNL=buildSheet(function(){
+    var rows=[],r=0;
+    var push=function(c,m){rows.push({r:r,cells:c,merge:m});r++;};
+    var blank=function(){push([cell('',bodyFont)]);};
+    push([cell('Canvas Residential Partners',titleFont)],{s:{r:0,c:0},e:{r:0,c:1}});
+    push([cell('Consolidated Income Statement',subFont)],{s:{r:1,c:0},e:{r:1,c:1}});
+    push([cell(period,subFont)],{s:{r:2,c:0},e:{r:2,c:1}});
+    if(prep)push([cell('Prepared by: '+prep,subFont)]);
     blank();
-
-    // Column headers
-    push([
-      cell('Line Item', headerFont, { type:'pattern',pattern:'solid',fgColor:{rgb:NAVY}}, null, { horizontal: 'left' }, border),
-      cell('Amount', headerFont, { type:'pattern',pattern:'solid',fgColor:{rgb:NAVY}}, null, { horizontal: 'right' }, border)
-    ]);
-
-    // Revenue
-    push([cell('REVENUE', sectionFont, ltblueFill, null, { horizontal: 'left' }, border),
-          cell('', sectionFont, ltblueFill, null, null, border)]);
-    revenue.forEach(function(e) {
-      push([cell('    ' + e[0], bodyFont, null, null, { horizontal: 'left' }, border),
-            cell(-e[1].total, bodyFont, null, numFmt, { horizontal: 'right' }, border)]);
-    });
-    push([cell('Total Revenue', boldFont, ltgrayFill, null, { horizontal: 'left' }, thickBottom),
-          cell(totalRev, boldFont, ltgrayFill, numFmt, { horizontal: 'right' }, thickBottom)]);
+    push([cell('Line Item',headerFont,navyFill,null,{horizontal:'left'},border),cell('Amount',headerFont,navyFill,null,{horizontal:'right'},border)]);
+    push([cell('REVENUE',sectionFont,ltblueFill,null,{horizontal:'left'},border),cell('',sectionFont,ltblueFill,null,null,border)]);
+    revenue.forEach(function(e){push([cell('    '+e[0],bodyFont,null,null,{horizontal:'left'},border),cell(-e[1].total,bodyFont,null,numFmt,{horizontal:'right'},border)]);});
+    push([cell('Total Revenue',boldFont,ltgrayFill,null,{horizontal:'left'},thickBottom),cell(totalRev,boldFont,ltgrayFill,numFmt,{horizontal:'right'},thickBottom)]);
     blank();
-
-    // Expenses
-    push([cell('OPERATING EXPENSES', sectionFont, ltblueFill, null, { horizontal: 'left' }, border),
-          cell('', sectionFont, ltblueFill, null, null, border)]);
-    expense.forEach(function(e) {
-      push([cell('    ' + e[0], bodyFont, null, null, { horizontal: 'left' }, border),
-            cell(e[1].total, bodyFont, null, numFmt, { horizontal: 'right' }, border)]);
-    });
-    push([cell('Total Expenses', boldFont, ltgrayFill, null, { horizontal: 'left' }, thickBottom),
-          cell(totalExp, boldFont, ltgrayFill, numFmt, { horizontal: 'right' }, thickBottom)]);
+    push([cell('OPERATING EXPENSES',sectionFont,ltblueFill,null,{horizontal:'left'},border),cell('',sectionFont,ltblueFill,null,null,border)]);
+    expense.forEach(function(e){push([cell('    '+e[0],bodyFont,null,null,{horizontal:'left'},border),cell(e[1].total,bodyFont,null,numFmt,{horizontal:'right'},border)]);});
+    push([cell('Total Expenses',boldFont,ltgrayFill,null,{horizontal:'left'},thickBottom),cell(totalExp,boldFont,ltgrayFill,numFmt,{horizontal:'right'},thickBottom)]);
     blank();
-
-    // NOI
-    push([cell('NET OPERATING INCOME', totalFont, navyFill, null, { horizontal: 'left' }, border),
-          cell(noi, totalFont, navyFill, numFmt, { horizontal: 'right' }, border)]);
-
+    push([cell('NET OPERATING INCOME',totalFont,navyFill,null,{horizontal:'left'},border),cell(noi,totalFont,navyFill,numFmt,{horizontal:'right'},border)]);
     return rows;
   });
-  wsPNL['!cols'] = [{ wch: 42 }, { wch: 18 }];
-  XLSX.utils.book_append_sheet(wb, wsPNL, 'Income Statement');
+  wsPNL['!cols']=[{wch:42},{wch:18}];
+  XLSX.utils.book_append_sheet(wb,wsPNL,'Income Statement');
 
-  // ── BALANCE SHEET ──
-  var wsBS = buildSheet('Balance Sheet', function() {
-    var rows = [];
-    var r = 0;
-    var push = function(cells, merge) { rows.push({ r: r, cells: cells, merge: merge }); r++; };
-    var blank = function() { push([cell('', bodyFont)]); };
-
-    push([cell('Canvas Residential Partners', titleFont)], { s: { r: 0, c: 0 }, e: { r: 0, c: 1 } });
-    push([cell('Consolidated Balance Sheet', subFont)], { s: { r: 1, c: 0 }, e: { r: 1, c: 1 } });
-    push([cell(period, subFont)], { s: { r: 2, c: 0 }, e: { r: 2, c: 1 } });
+  var wsBS=buildSheet(function(){
+    var rows=[],r=0;
+    var push=function(c,m){rows.push({r:r,cells:c,merge:m});r++;};
+    var blank=function(){push([cell('',bodyFont)]);};
+    push([cell('Canvas Residential Partners',titleFont)],{s:{r:0,c:0},e:{r:0,c:1}});
+    push([cell('Consolidated Balance Sheet',subFont)],{s:{r:1,c:0},e:{r:1,c:1}});
+    push([cell(period,subFont)],{s:{r:2,c:0},e:{r:2,c:1}});
     blank();
-    push([cell('Line Item', headerFont, { type:'pattern',pattern:'solid',fgColor:{rgb:NAVY}}, null, { horizontal: 'left' }, border),
-          cell('Amount', headerFont, { type:'pattern',pattern:'solid',fgColor:{rgb:NAVY}}, null, { horizontal: 'right' }, border)]);
-
-    [['ASSETS', assets, totalAssets, 1], ['LIABILITIES', liabs, totalLiab, -1], ['EQUITY', equity, totalEq, -1]].forEach(function(grp) {
-      var label = grp[0], items = grp[1], total = grp[2], flip = grp[3];
-      push([cell(label, sectionFont, ltblueFill, null, { horizontal: 'left' }, border),
-            cell('', sectionFont, ltblueFill, null, null, border)]);
-      items.forEach(function(e) {
-        push([cell('    ' + e[0], bodyFont, null, null, { horizontal: 'left' }, border),
-              cell(e[1].total * flip, bodyFont, null, numFmt, { horizontal: 'right' }, border)]);
-      });
-      push([cell('Total ' + label.charAt(0) + label.slice(1).toLowerCase(), boldFont, ltgrayFill, null, { horizontal: 'left' }, thickBottom),
-            cell(total, boldFont, ltgrayFill, numFmt, { horizontal: 'right' }, thickBottom)]);
+    push([cell('Line Item',headerFont,navyFill,null,{horizontal:'left'},border),cell('Amount',headerFont,navyFill,null,{horizontal:'right'},border)]);
+    [['ASSETS',assets,totalAssets,1],['LIABILITIES',liabs,totalLiab,-1],['EQUITY',equity,totalEq,-1]].forEach(function(grp){
+      var label=grp[0],items=grp[1],total=grp[2],flip=grp[3];
+      push([cell(label,sectionFont,ltblueFill,null,{horizontal:'left'},border),cell('',sectionFont,ltblueFill,null,null,border)]);
+      items.forEach(function(e){push([cell('    '+e[0],bodyFont,null,null,{horizontal:'left'},border),cell(e[1].total*flip,bodyFont,null,numFmt,{horizontal:'right'},border)]);});
+      push([cell('Total '+label.charAt(0)+label.slice(1).toLowerCase(),boldFont,ltgrayFill,null,{horizontal:'left'},thickBottom),cell(total,boldFont,ltgrayFill,numFmt,{horizontal:'right'},thickBottom)]);
       blank();
     });
-
-    push([cell('TOTAL LIABILITIES + EQUITY', totalFont, navyFill, null, { horizontal: 'left' }, border),
-          cell(totalLiab + totalEq, totalFont, navyFill, numFmt, { horizontal: 'right' }, border)]);
-    var balanced = Math.abs(diff) < 1;
-    push([cell('Difference (check)', balanced ? boldFont : { name:'Arial',sz:10,bold:true,color:{rgb:'FF0000'} }, balanced ? ltgrayFill : { type:'pattern',pattern:'solid',fgColor:{rgb:'FFCCCC'} }, null, { horizontal: 'left' }, border),
-          cell(diff, balanced ? boldFont : { name:'Arial',sz:10,bold:true,color:{rgb:'FF0000'} }, balanced ? ltgrayFill : { type:'pattern',pattern:'solid',fgColor:{rgb:'FFCCCC'} }, numFmt, { horizontal: 'right' }, border)]);
-
+    push([cell('TOTAL LIABILITIES + EQUITY',totalFont,navyFill,null,{horizontal:'left'},border),cell(totalLiab+totalEq,totalFont,navyFill,numFmt,{horizontal:'right'},border)]);
+    var bal=Math.abs(diff)<1;
+    var df=bal?boldFont:{name:'Arial',sz:10,bold:true,color:{rgb:'FF0000'}};
+    var ff=bal?ltgrayFill:{type:'pattern',pattern:'solid',fgColor:{rgb:'FFCCCC'}};
+    push([cell('Difference (check)',df,ff,null,{horizontal:'left'},border),cell(diff,df,ff,numFmt,{horizontal:'right'},border)]);
     return rows;
   });
-  wsBS['!cols'] = [{ wch: 42 }, { wch: 18 }];
-  XLSX.utils.book_append_sheet(wb, wsBS, 'Balance Sheet');
+  wsBS['!cols']=[{wch:42},{wch:18}];
+  XLSX.utils.book_append_sheet(wb,wsBS,'Balance Sheet');
 
-  // ── BY ENTITY SHEET ──
-  var wsEntity = buildSheet('By Entity', function() {
-    var rows = [];
-    var r = 0;
-    var nEnt = state.entities.length;
-    var push = function(cells, merge) { rows.push({ r: r, cells: cells, merge: merge }); r++; };
-    var blank = function() { push([cell('', bodyFont)]); };
-
-    // Build a map of all entity amounts including IC accounts (before elimination)
-    var rawLines = {};
-    state.entities.forEach(function(entity) {
-      entity.accounts.forEach(function(acct) {
-        var key = acct.num + '|||' + acct.name;
-        var mapping = state.coaMap[key];
-        if (!mapping) return;
-        var line = mapping.consolidatedLine;
-        var type = mapping.type === 'Intercompany' ? 'Intercompany' : mapping.type;
-        if (!rawLines[line]) rawLines[line] = { type: type, total: 0, byEntity: {} };
-        rawLines[line].total += acct.net;
-        rawLines[line].byEntity[entity.name] = (rawLines[line].byEntity[entity.name] || 0) + acct.net;
+  var wsEntity=buildSheet(function(){
+    var rows=[],r=0,nEnt=state.entities.length;
+    var push=function(c,m){rows.push({r:r,cells:c,merge:m});r++;};
+    var blank=function(){push([cell('',bodyFont)]);};
+    var rawLines={};
+    state.entities.forEach(function(entity){
+      entity.accounts.forEach(function(acct){
+        var m=state.coaMap[acct.num+'|||'+acct.name];
+        if(!m)return;
+        var line=m.consolidatedLine;
+        var type=m.isIC?'Intercompany':m.type;
+        if(!rawLines[line])rawLines[line]={type:type,byEntity:{}};
+        rawLines[line].byEntity[entity.name]=(rawLines[line].byEntity[entity.name]||0)+acct.net;
       });
     });
-
-    // Elimination amount per line = raw entity sum - consolidated amount (0 if eliminated)
-    function elimAmt(lineName, flip) {
-      var raw = rawLines[lineName];
-      var cons = lines[lineName];
-      if (!raw) return 0;
-      var rawTotal = Object.values(raw.byEntity).reduce(function(s,v){ return s+v; },0) * flip;
-      var consTotal = cons ? cons.total * flip : 0;
-      return consTotal - rawTotal; // negative = eliminated
-    }
-
-    var ORANGE = 'C65911';
-    var ltOrange = 'FCE4D6';
-    var elimHeaderFill = { type:'pattern',pattern:'solid',fgColor:{rgb:ORANGE} };
-    var elimFill = { type:'pattern',pattern:'solid',fgColor:{rgb:ltOrange} };
-
-    push([cell('Canvas Residential Partners', titleFont)], { s: { r: 0, c: 0 }, e: { r: 0, c: nEnt + 3 } });
-    push([cell('Consolidated by Entity', subFont)], { s: { r: 1, c: 0 }, e: { r: 1, c: nEnt + 3 } });
-    push([cell(period, subFont)], { s: { r: 2, c: 0 }, e: { r: 2, c: nEnt + 3 } });
+    function rawSum(line){var rl=rawLines[line];if(!rl)return 0;return Object.values(rl.byEntity).reduce(function(s,v){return s+v;},0);}
+    var ORANGE='C65911',ltOrange='FCE4D6';
+    var elimHdr={type:'pattern',pattern:'solid',fgColor:{rgb:ORANGE}};
+    var elimFill={type:'pattern',pattern:'solid',fgColor:{rgb:ltOrange}};
+    push([cell('Canvas Residential Partners',titleFont)],{s:{r:0,c:0},e:{r:0,c:nEnt+3}});
+    push([cell('Consolidated by Entity',subFont)],{s:{r:1,c:0},e:{r:1,c:nEnt+3}});
+    push([cell(period,subFont)],{s:{r:2,c:0},e:{r:2,c:nEnt+3}});
     blank();
-
-    var hdrCells = [
-      cell('Line Item', headerFont, { type:'pattern',pattern:'solid',fgColor:{rgb:NAVY}}, null, { horizontal: 'left' }, border),
-      cell('Type', headerFont, { type:'pattern',pattern:'solid',fgColor:{rgb:NAVY}}, null, { horizontal: 'center' }, border)
-    ];
-    state.entities.forEach(function(e) {
-      hdrCells.push(cell(e.name, headerFont, { type:'pattern',pattern:'solid',fgColor:{rgb:NAVY}}, null, { horizontal: 'right', wrapText: true }, border));
+    var hdr=[cell('Line Item',headerFont,navyFill,null,{horizontal:'left'},border),cell('Type',headerFont,navyFill,null,{horizontal:'center'},border)];
+    state.entities.forEach(function(e){hdr.push(cell(e.name,headerFont,navyFill,null,{horizontal:'right',wrapText:true},border));});
+    hdr.push(cell('Eliminations',headerFont,elimHdr,null,{horizontal:'right'},border));
+    hdr.push(cell('Consolidated',headerFont,navyFill,null,{horizontal:'right'},border));
+    push(hdr);
+    var allTypes=['Revenue','Expense','Asset','Liability','Equity'];
+    allTypes.forEach(function(type){
+      var consLines=Object.entries(lines).filter(function(e){return e[1].type===type;});
+      var elimOnly=Object.entries(rawLines).filter(function(e){return e[1].type===type && !lines[e[0]];});
+      var all=consLines.concat(elimOnly);
+      if(!all.length)return;
+      var flip=(type==='Revenue'||type==='Liability'||type==='Equity')?-1:1;
+      var sec=[cell(type.toUpperCase(),sectionFont,ltblueFill,null,{horizontal:'left'},border),cell('',sectionFont,ltblueFill,null,null,border)];
+      state.entities.forEach(function(){sec.push(cell('',sectionFont,ltblueFill,null,null,border));});
+      sec.push(cell('',sectionFont,ltblueFill,null,null,border));sec.push(cell('',sectionFont,ltblueFill,null,null,border));
+      push(sec);
+      all.forEach(function(entry,ri){
+        var name=entry[0];
+        var rowFill=ri%2===0?null:ltgrayFill;
+        var consVal=lines[name]?lines[name].total*flip:0;
+        var rawVal=rawSum(name)*flip;
+        var elim=consVal-rawVal;
+        var rc=[cell('    '+name,bodyFont,rowFill,null,{horizontal:'left'},border),cell(type.substring(0,3),bodyFont,rowFill,null,{horizontal:'center'},border)];
+        state.entities.forEach(function(e){var rl=rawLines[name];rc.push(cell(rl&&rl.byEntity[e.name]?rl.byEntity[e.name]*flip:0,bodyFont,rowFill,numFmt,{horizontal:'right'},border));});
+        rc.push(cell(elim,bodyFont,Math.abs(elim)>0.5?elimFill:rowFill,numFmt,{horizontal:'right'},border));
+        rc.push(cell(consVal,boldFont,rowFill,numFmt,{horizontal:'right'},border));
+        push(rc);
+      });
+      var tc=[cell('Total '+type,boldFont,midFill,null,{horizontal:'left'},thickBottom),cell('',boldFont,midFill,null,null,thickBottom)];
+      state.entities.forEach(function(e){var et=all.reduce(function(s,x){var rl=rawLines[x[0]];return s+(rl&&rl.byEntity[e.name]?rl.byEntity[e.name]:0);},0)*flip;tc.push(cell(et,boldFont,midFill,numFmt,{horizontal:'right'},thickBottom));});
+      var totElim=all.reduce(function(s,x){var cv=lines[x[0]]?lines[x[0]].total*flip:0;var rv=rawSum(x[0])*flip;return s+(cv-rv);},0);
+      tc.push(cell(totElim,boldFont,{type:'pattern',pattern:'solid',fgColor:{rgb:'F4B183'}},numFmt,{horizontal:'right'},thickBottom));
+      tc.push(cell(consLines.reduce(function(s,x){return s+x[1].total;},0)*flip,boldFont,midFill,numFmt,{horizontal:'right'},thickBottom));
+      push(tc);blank();
     });
-    hdrCells.push(cell('Eliminations', headerFont, elimHeaderFill, null, { horizontal: 'right' }, border));
-    hdrCells.push(cell('Consolidated', headerFont, { type:'pattern',pattern:'solid',fgColor:{rgb:NAVY}}, null, { horizontal: 'right' }, border));
-    push(hdrCells);
-
-    var allTypes = ['Revenue','Expense','Asset','Liability','Equity'];
-    allTypes.forEach(function(type) {
-      var typeLines = Object.entries(lines).filter(function(e){ return e[1].type===type; });
-      // Also include eliminated lines that were in this type category
-      var rawTypeLines = Object.entries(rawLines).filter(function(e){
-        return e[1].type===type && !lines[e[0]];
-      });
-      var allTypeLines = typeLines.concat(rawTypeLines);
-      if (!allTypeLines.length) return;
-      var flip = (type==='Revenue'||type==='Liability'||type==='Equity') ? -1 : 1;
-
-      var secCells = [cell(type.toUpperCase(), sectionFont, ltblueFill, null, { horizontal: 'left' }, border), cell('', sectionFont, ltblueFill, null, null, border)];
-      state.entities.forEach(function(){ secCells.push(cell('', sectionFont, ltblueFill, null, null, border)); });
-      secCells.push(cell('', sectionFont, ltblueFill, null, null, border));
-      secCells.push(cell('', sectionFont, ltblueFill, null, null, border));
-      push(secCells);
-
-      allTypeLines.forEach(function(entry, ri) {
-        var rowFill = ri % 2 === 0 ? null : ltgrayFill;
-        var isEliminated = !lines[entry[0]];
-        var elim = elimAmt(entry[0], flip);
-        var consVal = lines[entry[0]] ? lines[entry[0]].total * flip : 0;
-        var rowCells = [
-          cell('    ' + entry[0], bodyFont, rowFill, null, { horizontal: 'left' }, border),
-          cell(type.substring(0,3), bodyFont, rowFill, null, { horizontal: 'center' }, border)
-        ];
-        state.entities.forEach(function(e) {
-          var raw = rawLines[entry[0]];
-          rowCells.push(cell((raw && raw.byEntity[e.name] ? raw.byEntity[e.name]*flip : 0), bodyFont, rowFill, numFmt, { horizontal: 'right' }, border));
-        });
-        rowCells.push(cell(elim || (isEliminated ? -Object.values(rawLines[entry[0]].byEntity).reduce(function(s,v){ return s+v; },0)*flip : 0), bodyFont, isEliminated ? elimFill : rowFill, numFmt, { horizontal: 'right' }, border));
-        rowCells.push(cell(consVal, boldFont, rowFill, numFmt, { horizontal: 'right' }, border));
-        push(rowCells);
-      });
-
-      var totalCells = [cell('Total ' + type, boldFont, midFill, null, { horizontal: 'left' }, thickBottom), cell('', boldFont, midFill, null, null, thickBottom)];
-      state.entities.forEach(function(e) {
-        var etotal = allTypeLines.reduce(function(s,x){ var raw=rawLines[x[0]]; return s+(raw&&raw.byEntity[e.name]?raw.byEntity[e.name]:0); },0)*flip;
-        totalCells.push(cell(etotal, boldFont, midFill, numFmt, { horizontal: 'right' }, thickBottom));
-      });
-      // Total eliminations for this type
-      var totalElim = allTypeLines.reduce(function(s,x){ return s + (elimAmt(x[0],flip) || (lines[x[0]] ? 0 : -Object.values(rawLines[x[0]].byEntity).reduce(function(ss,v){ return ss+v; },0)*flip)); },0);
-      totalCells.push(cell(totalElim, boldFont, { type:'pattern',pattern:'solid',fgColor:{rgb:'F4B183'} }, numFmt, { horizontal: 'right' }, thickBottom));
-      totalCells.push(cell(typeLines.reduce(function(s,x){ return s+x[1].total; },0)*flip, boldFont, midFill, numFmt, { horizontal: 'right' }, thickBottom));
-      push(totalCells);
-      blank();
-    });
-
     return rows;
   });
-  var entityCols = [{ wch: 38 }, { wch: 8 }];
-  state.entities.forEach(function(e){ entityCols.push({ wch: Math.max(14, Math.min(e.name.length, 20)) }); });
-  entityCols.push({ wch: 14 }); // Eliminations
-  entityCols.push({ wch: 14 }); // Consolidated
-  wsEntity['!cols'] = entityCols;
-  XLSX.utils.book_append_sheet(wb, wsEntity, 'By Entity');
+  var ec=[{wch:38},{wch:8}];
+  state.entities.forEach(function(e){ec.push({wch:Math.max(14,Math.min(e.name.length,20))});});
+  ec.push({wch:14});ec.push({wch:14});
+  wsEntity['!cols']=ec;
+  XLSX.utils.book_append_sheet(wb,wsEntity,'By Entity');
 
-  XLSX.writeFile(wb, 'canvas_consolidated_' + dateStr + '.xlsx');
+  XLSX.writeFile(wb,'canvas_consolidated_'+dateStr+'.xlsx');
 }
 
 function clearAll() {
   if (!state.entities.length || confirm('Clear all loaded data?')) {
-    state.entities = [];
-    state.coaMap = {};
+    state.entities = []; state.coaMap = {}; state.customEliminations = [];
     renderEntityList();
     ['done-upload','done-map','done-ic'].forEach(function(id){ document.getElementById(id).style.display='none'; });
     document.getElementById('uploadActions').style.display='none';
-    switchTab('upload');
-    updateFooter();
+    switchTab('upload'); updateFooter();
   }
 }
 
@@ -996,68 +781,41 @@ function updateFooter() {
 function loadDemo() {
   var demo = [
     { name: 'The Winnifred', accounts: [
-      {num:'4000',name:'Rental Income',net:285000,type:'Revenue'},
-      {num:'4100',name:'Other Income',net:12000,type:'Revenue'},
-      {num:'5100',name:'Payroll & Benefits',net:48000,type:'Expense'},
-      {num:'5200',name:'Repairs & Maintenance',net:22000,type:'Expense'},
-      {num:'5300',name:'Utilities',net:18000,type:'Expense'},
-      {num:'5400',name:'Insurance',net:9000,type:'Expense'},
-      {num:'5500',name:'Property Management Fee',net:14250,type:'Expense'},
-      {num:'5600',name:'Interest Expense',net:155000,type:'Expense'},
-      {num:'1000',name:'Cash & Equivalents',net:120000,type:'Asset'},
-      {num:'1200',name:'Accounts Receivable',net:35000,type:'Asset'},
-      {num:'1500',name:'Real Property - Net',net:18500000,type:'Asset'},
-      {num:'2000',name:'Mortgage Payable',net:26800000,type:'Liability'},
-      {num:'2100',name:'Accounts Payable',net:45000,type:'Liability'},
-      {num:'2500',name:'Due to CCMC',net:125000,type:'Intercompany'},
+      {num:'4000',name:'Rental Income',net:285000,type:'Revenue'},{num:'4100',name:'Other Income',net:12000,type:'Revenue'},
+      {num:'5100',name:'Payroll & Benefits',net:48000,type:'Expense'},{num:'5200',name:'Repairs & Maintenance',net:22000,type:'Expense'},
+      {num:'5300',name:'Utilities',net:18000,type:'Expense'},{num:'5400',name:'Insurance',net:9000,type:'Expense'},
+      {num:'5500',name:'Property Management Fee',net:14250,type:'Expense'},{num:'5600',name:'Interest Expense',net:155000,type:'Expense'},
+      {num:'1000',name:'Cash & Equivalents',net:120000,type:'Asset'},{num:'1200',name:'Accounts Receivable',net:35000,type:'Asset'},
+      {num:'1500',name:'Real Property - Net',net:18500000,type:'Asset'},{num:'2000',name:'Mortgage Payable',net:26800000,type:'Liability'},
+      {num:'2100',name:'Accounts Payable',net:45000,type:'Liability'},{num:'2500',name:'Due to CCMC',net:125000,type:'Intercompany'},
       {num:'3000',name:'Partner Capital',net:-8215000,type:'Equity'}
     ]},
     { name: 'CC Groves', accounts: [
-      {num:'4000',name:'Rental Income',net:195000,type:'Revenue'},
-      {num:'4200',name:'Parking Income',net:8500,type:'Revenue'},
-      {num:'5100',name:'Payroll & Benefits',net:32000,type:'Expense'},
-      {num:'5200',name:'Repairs & Maintenance',net:14000,type:'Expense'},
-      {num:'5300',name:'Utilities',net:11000,type:'Expense'},
-      {num:'5400',name:'Insurance',net:6500,type:'Expense'},
-      {num:'5500',name:'Property Management Fee',net:9750,type:'Expense'},
-      {num:'5600',name:'Interest Expense',net:98000,type:'Expense'},
-      {num:'1000',name:'Cash & Equivalents',net:85000,type:'Asset'},
-      {num:'1500',name:'Real Property - Net',net:12200000,type:'Asset'},
-      {num:'2000',name:'Mortgage Payable',net:16500000,type:'Liability'},
-      {num:'2100',name:'Accounts Payable',net:28000,type:'Liability'},
-      {num:'2500',name:'Due to CCMC',net:75000,type:'Intercompany'},
-      {num:'3000',name:'Partner Capital',net:-4282000,type:'Equity'}
+      {num:'4000',name:'Rental Income',net:195000,type:'Revenue'},{num:'4200',name:'Parking Income',net:8500,type:'Revenue'},
+      {num:'5100',name:'Payroll & Benefits',net:32000,type:'Expense'},{num:'5200',name:'Repairs & Maintenance',net:14000,type:'Expense'},
+      {num:'5300',name:'Utilities',net:11000,type:'Expense'},{num:'5400',name:'Insurance',net:6500,type:'Expense'},
+      {num:'5500',name:'Property Management Fee',net:9750,type:'Expense'},{num:'5600',name:'Interest Expense',net:98000,type:'Expense'},
+      {num:'1000',name:'Cash & Equivalents',net:85000,type:'Asset'},{num:'1500',name:'Real Property - Net',net:12200000,type:'Asset'},
+      {num:'2000',name:'Mortgage Payable',net:16500000,type:'Liability'},{num:'2100',name:'Accounts Payable',net:28000,type:'Liability'},
+      {num:'2500',name:'Due to CCMC',net:75000,type:'Intercompany'},{num:'3000',name:'Partner Capital',net:-4282000,type:'Equity'}
     ]},
     { name: 'Avery / Oak', accounts: [
-      {num:'4000',name:'Rental Income',net:145000,type:'Revenue'},
-      {num:'5100',name:'Payroll & Benefits',net:24000,type:'Expense'},
-      {num:'5200',name:'Repairs & Maintenance',net:9500,type:'Expense'},
-      {num:'5300',name:'Utilities',net:8200,type:'Expense'},
-      {num:'5500',name:'Property Management Fee',net:7250,type:'Expense'},
-      {num:'5600',name:'Interest Expense',net:72000,type:'Expense'},
-      {num:'1000',name:'Cash & Equivalents',net:62000,type:'Asset'},
-      {num:'1500',name:'Real Property - Net',net:9100000,type:'Asset'},
-      {num:'2000',name:'Mortgage Payable',net:11200000,type:'Liability'},
-      {num:'2500',name:'Due to CCMC',net:50000,type:'Intercompany'},
+      {num:'4000',name:'Rental Income',net:145000,type:'Revenue'},{num:'5100',name:'Payroll & Benefits',net:24000,type:'Expense'},
+      {num:'5200',name:'Repairs & Maintenance',net:9500,type:'Expense'},{num:'5300',name:'Utilities',net:8200,type:'Expense'},
+      {num:'5500',name:'Property Management Fee',net:7250,type:'Expense'},{num:'5600',name:'Interest Expense',net:72000,type:'Expense'},
+      {num:'1000',name:'Cash & Equivalents',net:62000,type:'Asset'},{num:'1500',name:'Real Property - Net',net:9100000,type:'Asset'},
+      {num:'2000',name:'Mortgage Payable',net:11200000,type:'Liability'},{num:'2500',name:'Due to CCMC',net:50000,type:'Intercompany'},
       {num:'3000',name:'Partner Capital',net:-2012000,type:'Equity'}
     ]}
   ];
-  state.entities = demo;
-  state.coaMap = {};
-  demo.forEach(function(entity) {
-    entity.accounts.forEach(function(acct) {
-      var key = acct.num+'|||'+acct.name;
-      if (!state.coaMap[key]) state.coaMap[key]={num:acct.num,name:acct.name,type:acct.type,consolidatedLine:acct.name,isIC:acct.type==='Intercompany'};
-    });
-  });
+  state.entities = demo; state.coaMap = {}; state.customEliminations = [];
+  buildCOAMap();
   document.getElementById('periodDate').value = 'March 31, 2026';
   document.getElementById('preparedBy').value = 'D.W.';
-  renderEntityList();
-  updateFooter();
+  renderEntityList(); updateFooter();
   ['done-upload','done-map','done-ic'].forEach(function(id){ document.getElementById(id).style.display=''; });
   switchTab('statements');
 }
 </script>
-</div>
 </body>
 </html>
