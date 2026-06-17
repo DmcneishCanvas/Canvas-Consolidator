@@ -488,6 +488,8 @@ function renderStatements() {
   var assets = byType('Asset'), liabilities = byType('Liability'), equity = byType('Equity');
   var totalRev = -sum(revenue), totalExp = sum(expense), noi = totalRev - totalExp;
   var totalAssets = sum(assets), totalLiab = -sum(liabilities), totalEq = -sum(equity);
+  // Net income rolls into equity (links the income statement to the balance sheet)
+  var totalEqWithNI = totalEq + noi;
   var margin = totalRev ? (noi / totalRev * 100) : 0;
 
   var html = '<div class="metric-grid">';
@@ -515,7 +517,7 @@ function renderStatements() {
     html += '<tr class="stmt-total"><td>Net operating income</td><td class="' + (noi>=0?'positive':'negative') + '">' + fmtCurrency(noi) + '</td></tr>';
     html += '</tbody></table></div>';
   } else if (state.stmtTab === 'bs') {
-    var diff = totalAssets - (totalLiab + totalEq);
+    var diff = totalAssets - (totalLiab + totalEqWithNI);
     var balanced = Math.abs(diff) < 1;
     html += balanced
       ? '<div class="alert alert-success"><i class="ti ti-check"></i>Balance sheet is in balance — assets equal liabilities + equity.</div>'
@@ -529,8 +531,9 @@ function renderStatements() {
     html += '<tr class="stmt-subtotal"><td>Total liabilities</td><td>' + fmtCurrency(totalLiab) + '</td></tr>';
     html += '<tr class="stmt-section-header"><td colspan="2">Equity</td></tr>';
     equity.forEach(function(e){ html += '<tr><td style="padding-left:20px">' + e[0] + '</td><td>' + fmtCurrency(-e[1].total) + '</td></tr>'; });
-    html += '<tr class="stmt-subtotal"><td>Total equity</td><td>' + fmtCurrency(totalEq) + '</td></tr>';
-    html += '<tr class="stmt-total"><td>Total liabilities + equity</td><td>' + fmtCurrency(totalLiab + totalEq) + '</td></tr>';
+    html += '<tr><td style="padding-left:20px">Net Income (Current Period)</td><td class="' + (noi>=0?'positive':'negative') + '">' + fmtCurrency(noi) + '</td></tr>';
+    html += '<tr class="stmt-subtotal"><td>Total equity</td><td>' + fmtCurrency(totalEqWithNI) + '</td></tr>';
+    html += '<tr class="stmt-total"><td>Total liabilities + equity</td><td>' + fmtCurrency(totalLiab + totalEqWithNI) + '</td></tr>';
     html += '<tr style="background:' + (balanced ? 'var(--success-bg)' : 'var(--danger-bg)') + '"><td style="font-weight:600;padding:8px 10px">Difference (assets − liabilities − equity)</td><td style="text-align:right;font-weight:600;padding:8px 10px;color:' + (balanced ? 'var(--success)' : 'var(--danger)') + '">' + fmtCurrency(diff) + '</td></tr>';
     html += '</tbody></table></div>';
   } else {
@@ -600,7 +603,8 @@ function exportExcel() {
   var totalAssets=assets.reduce(function(s,e){return s+e[1].total;},0);
   var totalLiab=-liabs.reduce(function(s,e){return s+e[1].total;},0);
   var totalEq=-equity.reduce(function(s,e){return s+e[1].total;},0);
-  var diff=totalAssets-totalLiab-totalEq;
+  var totalEqWithNI=totalEq+noi;
+  var diff=totalAssets-totalLiab-totalEqWithNI;
 
   var wsPNL=buildSheet(function(){
     var rows=[],r=0;
@@ -635,14 +639,15 @@ function exportExcel() {
     push([cell(period,subFont)],{s:{r:2,c:0},e:{r:2,c:1}});
     blank();
     push([cell('Line Item',headerFont,navyFill,null,{horizontal:'left'},border),cell('Amount',headerFont,navyFill,null,{horizontal:'right'},border)]);
-    [['ASSETS',assets,totalAssets,1],['LIABILITIES',liabs,totalLiab,-1],['EQUITY',equity,totalEq,-1]].forEach(function(grp){
+    [['ASSETS',assets,totalAssets,1],['LIABILITIES',liabs,totalLiab,-1],['EQUITY',equity,totalEqWithNI,-1]].forEach(function(grp){
       var label=grp[0],items=grp[1],total=grp[2],flip=grp[3];
       push([cell(label,sectionFont,ltblueFill,null,{horizontal:'left'},border),cell('',sectionFont,ltblueFill,null,null,border)]);
       items.forEach(function(e){push([cell('    '+e[0],bodyFont,null,null,{horizontal:'left'},border),cell(e[1].total*flip,bodyFont,null,numFmt,{horizontal:'right'},border)]);});
+      if(label==='EQUITY'){push([cell('    Net Income (Current Period)',bodyFont,null,null,{horizontal:'left'},border),cell(noi,bodyFont,null,numFmt,{horizontal:'right'},border)]);}
       push([cell('Total '+label.charAt(0)+label.slice(1).toLowerCase(),boldFont,ltgrayFill,null,{horizontal:'left'},thickBottom),cell(total,boldFont,ltgrayFill,numFmt,{horizontal:'right'},thickBottom)]);
       blank();
     });
-    push([cell('TOTAL LIABILITIES + EQUITY',totalFont,navyFill,null,{horizontal:'left'},border),cell(totalLiab+totalEq,totalFont,navyFill,numFmt,{horizontal:'right'},border)]);
+    push([cell('TOTAL LIABILITIES + EQUITY',totalFont,navyFill,null,{horizontal:'left'},border),cell(totalLiab+totalEqWithNI,totalFont,navyFill,numFmt,{horizontal:'right'},border)]);
     var bal=Math.abs(diff)<1;
     var df=bal?boldFont:{name:'Arial',sz:10,bold:true,color:{rgb:'FF0000'}};
     var ff=bal?ltgrayFill:{type:'pattern',pattern:'solid',fgColor:{rgb:'FFCCCC'}};
