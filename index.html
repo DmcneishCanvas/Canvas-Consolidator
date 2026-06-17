@@ -588,6 +588,10 @@ function exportExcel() {
   var thinBorder={style:'thin',color:{rgb:'BFBFBF'}};
   var border={top:thinBorder,bottom:thinBorder,left:thinBorder,right:thinBorder};
   var thickBottom={top:thinBorder,bottom:{style:'medium',color:{rgb:NAVY}},left:thinBorder,right:thinBorder};
+  // Accounting-style total borders
+  var DK='000000';
+  var subtotalBorder={top:{style:'thin',color:{rgb:DK}}};        // single line above subtotals
+  var grandTotalBorder={top:{style:'thin',color:{rgb:DK}},bottom:{style:'double',color:{rgb:DK}}}; // double underline for grand totals
 
   function cell(v,font,fill,nf,align,bdr){var c={v:v,t:typeof v==='number'?'n':'s'};var s={};if(font)s.font=font;if(fill)s.fill=fill;if(nf)s.numFmt=nf;if(align)s.alignment=align;if(bdr)s.border=bdr;c.s=s;return c;}
   function buildSheet(buildRows){var ws={};var data=buildRows();var maxRow=0,maxCol=0;data.forEach(function(row){row.cells.forEach(function(c,ci){ws[XLSX.utils.encode_cell({r:row.r,c:ci})]=c;if(ci>maxCol)maxCol=ci;});if(row.r>maxRow)maxRow=row.r;if(row.merge){if(!ws['!merges'])ws['!merges']=[];ws['!merges'].push(row.merge);}});ws['!ref']=XLSX.utils.encode_range({s:{r:0,c:0},e:{r:maxRow,c:maxCol}});return ws;}
@@ -618,13 +622,13 @@ function exportExcel() {
     push([cell('Line Item',headerFont,navyFill,null,{horizontal:'left'},border),cell('Amount',headerFont,navyFill,null,{horizontal:'right'},border)]);
     push([cell('REVENUE',sectionFont,ltblueFill,null,{horizontal:'left'},border),cell('',sectionFont,ltblueFill,null,null,border)]);
     revenue.forEach(function(e){push([cell('    '+e[0],bodyFont,null,null,{horizontal:'left'},border),cell(-e[1].total,bodyFont,null,numFmt,{horizontal:'right'},border)]);});
-    push([cell('Total Revenue',boldFont,ltgrayFill,null,{horizontal:'left'},thickBottom),cell(totalRev,boldFont,ltgrayFill,numFmt,{horizontal:'right'},thickBottom)]);
+    push([cell('Total Revenue',boldFont,ltgrayFill,null,{horizontal:'left'},subtotalBorder),cell(totalRev,boldFont,ltgrayFill,numFmt,{horizontal:'right'},subtotalBorder)]);
     blank();
     push([cell('OPERATING EXPENSES',sectionFont,ltblueFill,null,{horizontal:'left'},border),cell('',sectionFont,ltblueFill,null,null,border)]);
     expense.forEach(function(e){push([cell('    '+e[0],bodyFont,null,null,{horizontal:'left'},border),cell(e[1].total,bodyFont,null,numFmt,{horizontal:'right'},border)]);});
-    push([cell('Total Expenses',boldFont,ltgrayFill,null,{horizontal:'left'},thickBottom),cell(totalExp,boldFont,ltgrayFill,numFmt,{horizontal:'right'},thickBottom)]);
+    push([cell('Total Expenses',boldFont,ltgrayFill,null,{horizontal:'left'},subtotalBorder),cell(totalExp,boldFont,ltgrayFill,numFmt,{horizontal:'right'},subtotalBorder)]);
     blank();
-    push([cell('NET OPERATING INCOME',totalFont,navyFill,null,{horizontal:'left'},border),cell(noi,totalFont,navyFill,numFmt,{horizontal:'right'},border)]);
+    push([cell('NET OPERATING INCOME',totalFont,navyFill,null,{horizontal:'left'},grandTotalBorder),cell(noi,totalFont,navyFill,numFmt,{horizontal:'right'},grandTotalBorder)]);
     return rows;
   });
   wsPNL['!cols']=[{wch:42},{wch:18}];
@@ -644,10 +648,10 @@ function exportExcel() {
       push([cell(label,sectionFont,ltblueFill,null,{horizontal:'left'},border),cell('',sectionFont,ltblueFill,null,null,border)]);
       items.forEach(function(e){push([cell('    '+e[0],bodyFont,null,null,{horizontal:'left'},border),cell(e[1].total*flip,bodyFont,null,numFmt,{horizontal:'right'},border)]);});
       if(label==='EQUITY'){push([cell('    Net Income (Current Period)',bodyFont,null,null,{horizontal:'left'},border),cell(noi,bodyFont,null,numFmt,{horizontal:'right'},border)]);}
-      push([cell('Total '+label.charAt(0)+label.slice(1).toLowerCase(),boldFont,ltgrayFill,null,{horizontal:'left'},thickBottom),cell(total,boldFont,ltgrayFill,numFmt,{horizontal:'right'},thickBottom)]);
+      push([cell('Total '+label.charAt(0)+label.slice(1).toLowerCase(),boldFont,ltgrayFill,null,{horizontal:'left'},subtotalBorder),cell(total,boldFont,ltgrayFill,numFmt,{horizontal:'right'},subtotalBorder)]);
       blank();
     });
-    push([cell('TOTAL LIABILITIES + EQUITY',totalFont,navyFill,null,{horizontal:'left'},border),cell(totalLiab+totalEqWithNI,totalFont,navyFill,numFmt,{horizontal:'right'},border)]);
+    push([cell('TOTAL LIABILITIES + EQUITY',totalFont,navyFill,null,{horizontal:'left'},grandTotalBorder),cell(totalLiab+totalEqWithNI,totalFont,navyFill,numFmt,{horizontal:'right'},grandTotalBorder)]);
     var bal=Math.abs(diff)<1;
     var df=bal?boldFont:{name:'Arial',sz:10,bold:true,color:{rgb:'FF0000'}};
     var ff=bal?ltgrayFill:{type:'pattern',pattern:'solid',fgColor:{rgb:'FFCCCC'}};
@@ -673,6 +677,21 @@ function exportExcel() {
       });
     });
     function rawSum(line){var rl=rawLines[line];if(!rl)return 0;return Object.values(rl.byEntity).reduce(function(s,v){return s+v;},0);}
+    // Per-entity net income (revenue - expense), and consolidated NI
+    function entityNI(ename){
+      var rev=0,exp=0;
+      state.entities.forEach(function(e){ if(e.name!==ename)return; });
+      var ent=state.entities.find(function(e){return e.name===ename;});
+      if(!ent)return 0;
+      ent.accounts.forEach(function(a){
+        var m=state.coaMap[a.num+'|||'+a.name];
+        if(!m)return;
+        if(m.type==='Revenue')rev+=-a.net;
+        if(m.type==='Expense')exp+=a.net;
+      });
+      return rev-exp;
+    }
+    var consNI=noi; // from outer scope
     var ORANGE='C65911',ltOrange='FCE4D6';
     var elimHdr={type:'pattern',pattern:'solid',fgColor:{rgb:ORANGE}};
     var elimFill={type:'pattern',pattern:'solid',fgColor:{rgb:ltOrange}};
@@ -690,7 +709,7 @@ function exportExcel() {
       var consLines=Object.entries(lines).filter(function(e){return e[1].type===type;});
       var elimOnly=Object.entries(rawLines).filter(function(e){return e[1].type===type && !lines[e[0]];});
       var all=consLines.concat(elimOnly);
-      if(!all.length)return;
+      if(!all.length && type!=='Equity')return;
       var flip=(type==='Revenue'||type==='Liability'||type==='Equity')?-1:1;
       var sec=[cell(type.toUpperCase(),sectionFont,ltblueFill,null,{horizontal:'left'},border),cell('',sectionFont,ltblueFill,null,null,border)];
       state.entities.forEach(function(){sec.push(cell('',sectionFont,ltblueFill,null,null,border));});
@@ -708,11 +727,26 @@ function exportExcel() {
         rc.push(cell(consVal,boldFont,rowFill,numFmt,{horizontal:'right'},border));
         push(rc);
       });
-      var tc=[cell('Total '+type,boldFont,midFill,null,{horizontal:'left'},thickBottom),cell('',boldFont,midFill,null,null,thickBottom)];
-      state.entities.forEach(function(e){var et=all.reduce(function(s,x){var rl=rawLines[x[0]];return s+(rl&&rl.byEntity[e.name]?rl.byEntity[e.name]:0);},0)*flip;tc.push(cell(et,boldFont,midFill,numFmt,{horizontal:'right'},thickBottom));});
+      // Net Income roll-in line, shown in the Equity section
+      var niRowVals=[];
+      if(type==='Equity'){
+        var niRow=[cell('    Net Income (Current Period)',bodyFont,null,null,{horizontal:'left'},border),cell('Equ',bodyFont,null,null,{horizontal:'center'},border)];
+        state.entities.forEach(function(e){var v=entityNI(e.name);niRowVals.push(v);niRow.push(cell(v,bodyFont,null,numFmt,{horizontal:'right'},border));});
+        niRow.push(cell(0,bodyFont,null,numFmt,{horizontal:'right'},border)); // NI not eliminated
+        niRow.push(cell(consNI,boldFont,null,numFmt,{horizontal:'right'},border));
+        push(niRow);
+      }
+      var tc=[cell('Total '+type,boldFont,midFill,null,{horizontal:'left'},subtotalBorder),cell('',boldFont,midFill,null,null,subtotalBorder)];
+      state.entities.forEach(function(e,ei){
+        var et=all.reduce(function(s,x){var rl=rawLines[x[0]];return s+(rl&&rl.byEntity[e.name]?rl.byEntity[e.name]:0);},0)*flip;
+        if(type==='Equity')et+=entityNI(e.name);
+        tc.push(cell(et,boldFont,midFill,numFmt,{horizontal:'right'},subtotalBorder));
+      });
       var totElim=all.reduce(function(s,x){var cv=lines[x[0]]?lines[x[0]].total*flip:0;var rv=rawSum(x[0])*flip;return s+(cv-rv);},0);
-      tc.push(cell(totElim,boldFont,{type:'pattern',pattern:'solid',fgColor:{rgb:'F4B183'}},numFmt,{horizontal:'right'},thickBottom));
-      tc.push(cell(consLines.reduce(function(s,x){return s+x[1].total;},0)*flip,boldFont,midFill,numFmt,{horizontal:'right'},thickBottom));
+      tc.push(cell(totElim,boldFont,{type:'pattern',pattern:'solid',fgColor:{rgb:'F4B183'}},numFmt,{horizontal:'right'},subtotalBorder));
+      var consTotal=consLines.reduce(function(s,x){return s+x[1].total;},0)*flip;
+      if(type==='Equity')consTotal+=consNI;
+      tc.push(cell(consTotal,boldFont,midFill,numFmt,{horizontal:'right'},subtotalBorder));
       push(tc);blank();
     });
     return rows;
